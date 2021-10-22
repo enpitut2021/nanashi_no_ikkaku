@@ -1,11 +1,58 @@
 <template>
-<div>
-  <h1>yuku</h1>
-  <input v-model="message" placeholder="ワード">
-  <button >追加</button>
-  </div>
+ <div class="page">
+   <label>
+     <span>
+       お名前:
+     </span>
+     <input
+       type="text"
+       v-model="user.name"
+     >
+   </label>
+   <label>
+     <span>
+       email:
+     </span>
+     <input
+       type="text"
+       v-model="user.email"
+     >
+   </label>
+   <button
+     type="button"
+     @click="submit"
+   >
+     Submit
+   </button>
+ </div>
 </template>
 
 <script>
-export default {}
+import firebase from '@/plugins/firebase.js'
+// import 'firebase/firestore';
+
+export default {
+ data () {
+   return {
+     user: {
+       name: "",
+       email: ""
+     },
+   }
+ },
+ methods: {
+   submit () {
+     const db = firebase.firestore()
+     let dbUsers = db.collection('users')
+     dbUsers
+       .add({
+         name: this.user.name,
+         email: this.user.email,
+       })
+       .then(ref => {
+         console.log('Add ID: ', ref.id)
+       })
+   },
+ },
+}
 </script>
