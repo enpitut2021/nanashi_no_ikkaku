@@ -1,58 +1,25 @@
 <template>
- <div class="page">
-   <label>
-     <span>
-       お名前:
-     </span>
-     <input
-       type="text"
-       v-model="user.name"
-     >
-   </label>
-   <label>
-     <span>
-       email:
-     </span>
-     <input
-       type="text"
-       v-model="user.email"
-     >
-   </label>
-   <button
-     type="button"
-     @click="submit"
-   >
-     Submit
-   </button>
- </div>
+<div>
+  <input v-model="message" placeholder="ワード">
+  <button >追加</button>
+  <ul id="example-1">
+  <li v-for="item in words" :key="item">
+    {{ item }}
+    <button >👍</button>
+  </li>
+</ul>
+  </div>
 </template>
 
 <script>
-import firebase from '@/plugins/firebase.js'
-// import 'firebase/firestore';
+  export default {
+    data() {
+      return {
+        words: ['yuku', 'azami', 'pi-men']
+      }
+    },
+    async fetch() {
 
-export default {
- data () {
-   return {
-     user: {
-       name: "",
-       email: ""
-     },
-   }
- },
- methods: {
-   submit () {
-     const db = firebase.firestore()
-     let dbUsers = db.collection('users')
-     dbUsers
-       .add({
-         name: this.user.name,
-         email: this.user.email,
-       })
-       .then(ref => {
-         console.log('Add ID: ', ref.id)
-       })
-   },
- },
-}
+    }
+  }
 </script>
