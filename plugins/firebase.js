@@ -18,4 +18,8 @@ if (!firebase.apps.length) {
     })
 }
 
+firebase.firestore().settings({
+  ignoreUndefinedProperties: true,
+})
+
 export default firebase

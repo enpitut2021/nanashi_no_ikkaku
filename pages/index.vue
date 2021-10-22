@@ -1,8 +1,8 @@
 <template>
 <div>
-  <input type="text" v-model="words.word" placeholder="ワード">
+  <input type="text" v-model="words.word" id="field" placeholder="ワード">
   <button @click = "submit">追加</button>
-  <!-- <button @click = "getAllDocs('words')">更新</button> -->
+  <button @click = "reload">更新</button>
   <ul id="example-1">
   <li v-for="item in words" :key="item.id">
     {{ item.word }}
@@ -25,15 +25,24 @@ export default {
    submit () {
      const db = firebase.firestore()
      let dbWords = db.collection('words')
-     dbWords
+     let inputWord = this.words.word
+     if (inputWord != ""){
+      dbWords
        .add({
-         word: this.words.word
+         word: inputWord
        })
        .then(ref => {
          console.log('Add ID: ', ref.id)
        })
-      
+      var textField = document.getElementById("field");
+      textField.value = '';
+     }
    },
+
+   async reload (){
+     this.words = await getAllDocs("words")
+   },
+
   },
 }
 
