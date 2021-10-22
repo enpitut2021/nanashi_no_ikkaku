@@ -1,48 +1,51 @@
 <template>
 <div>
-  <input type="text" v-model="message" placeholder="ワード">
-  <button >追加</button>
-  <button @click = "getData">更新</button>
+  <input type="text" v-model="words.word" placeholder="ワード">
+  <button @click = "submit">追加</button>
+  <!-- <button @click = "getAllDocs('words')">更新</button> -->
   <ul id="example-1">
-  <li v-for="item in words" :key="item">
-    {{ item }}
+  <li v-for="item in words" :key="item.id">
+    {{ item.word }}
     <button >👍</button>
   </li>
 </ul>
-  <div id="user.name" />
   </div>
 </template>
 
 <script>
 import firebase from "@/plugins/firebase"
-  export default {
- data () {
-   return {
-    words: ['yuku', 'azami', 'pi-men']
-   }
-   
- },
+export default {
+  async asyncData({ params }) {
+    return {
+      words: await getAllDocs("words")
+    };
+  },
+
  methods: {
    submit () {
      const db = firebase.firestore()
-     let dbUsers = db.collection('users')
-     dbUsers
+     let dbWords = db.collection('words')
+     dbWords
        .add({
-         name: this.user.name,
-         email: this.user.email,
+         word: this.words.word
        })
        .then(ref => {
          console.log('Add ID: ', ref.id)
        })
+      
    },
-   getData()  {
-     const db = firebase.firestore()
-     let dbUsers = db.collection('users').doc('cgm9KDnMSqQIGnmumN62')
-    dbUsers.get().then(function(doc){
-      document.getElementById("user.name").innerHTML = (doc.data().name)
-    })
-   },
- },
+  },
+}
+
+async function getAllDocs(collection) {
+    let obj = [];
+    const db = firebase.firestore()
+    let colRef = db.collection(collection);
+    const allSnapShot = await colRef.get();
+    allSnapShot.forEach(doc => {
+      obj.push(doc.data());
+    });
+    return obj;
 }
   
 </script>
