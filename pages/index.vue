@@ -5,7 +5,7 @@
   <ul id="example-1">
   <li v-for="(item, index) in words" :key="item">
     {{ item }}
-    <button v-on:click="goodCount[index] += 1">👍{{goodCount[index]}} </button>
+    <button v-on:click="$set(goodCount, index, goodCount[index]+1)">👍{{goodCount[index]}} </button>
   </li>
 </ul>
   </div>
@@ -17,6 +17,7 @@
       return {
         words: ['yuku', 'azami', 'pi-men'],
         goodCount: [0, 0, 0],
+	countReload: 0,
       }
     },
     async fetch() {
