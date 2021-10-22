@@ -5,6 +5,7 @@
   <ul id="example-1">
   <li v-for="item in words" :key="item">
     {{ item }}
+    <button >👍</button>
   </li>
 </ul>
   </div>
