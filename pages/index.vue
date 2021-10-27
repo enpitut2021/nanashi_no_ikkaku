@@ -6,7 +6,6 @@
     <ul id="example-1">
       <li v-for="item in words" :key="item.id">
         {{ item.word }}
-        {{ item.id }}
         <button @click="good(item.id)">👍{{ item.good }}</button>
       </li>
     </ul>
@@ -18,14 +17,14 @@ import firebase from "@/plugins/firebase";
 export default {
   async asyncData({ params }) {
     return {
-      words: await getAllDocs("test"),
+      words: await getAllDocs("word"),
     };
   },
 
   methods: {
     submit() {
       const db = firebase.firestore();
-      let dbWords = db.collection("test");
+      let dbWords = db.collection("word");
       let inputWord = this.words.word;
       if (inputWord != "") {
         dbWords
@@ -43,7 +42,7 @@ export default {
 
     good(id) {
       const db = firebase.firestore();
-      let dbWord = db.collection("test").doc(id);
+      let dbWord = db.collection("word").doc(id);
       dbWord.get().then(function (doc) {
         if (doc.exists) {
           console.log(dbWord);
@@ -61,7 +60,7 @@ export default {
     },
 
     async reload() {
-      this.words = await getAllDocs("test");
+      this.words = await getAllDocs("word");
     },
   },
 };
