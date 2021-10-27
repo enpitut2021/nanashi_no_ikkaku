@@ -17,14 +17,14 @@ import firebase from "@/plugins/firebase";
 export default {
   async asyncData({ params }) {
     return {
-      words: await getAllDocs("word"),
+      words: await getAllDocs("demo"),
     };
   },
 
   methods: {
     submit() {
       const db = firebase.firestore();
-      let dbWords = db.collection("word");
+      let dbWords = db.collection("demo");
       let inputWord = this.words.word;
       if (inputWord != "") {
         dbWords
@@ -42,7 +42,7 @@ export default {
 
     good(id) {
       const db = firebase.firestore();
-      let dbWord = db.collection("word").doc(id);
+      let dbWord = db.collection("demo").doc(id);
       dbWord.get().then(function (doc) {
         if (doc.exists) {
           console.log(dbWord);
@@ -60,7 +60,7 @@ export default {
     },
 
     async reload() {
-      this.words = await getAllDocs("word");
+      this.words = await getAllDocs("demo");
     },
   },
 };
