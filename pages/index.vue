@@ -5,7 +5,7 @@
   <button @click = "reload">更新</button>
   <ul id="example-1">
   <li v-for="(item, index) in words" :key="item">
-    {{ item }}
+    {{ item.word }}
     <button v-on:click="$set(goodCount, index, goodCount[index]+1)">👍{{goodCount[index]}} </button>
   </li>
 </ul>
@@ -17,7 +17,7 @@ import firebase from "@/plugins/firebase"
 export default {
   async asyncData({ params }) {
     return {
-      words: await getAllDocs("words")
+      words: await getAllDocs("words"),
       goodCount: [0, 0, 0],
     };
   },
