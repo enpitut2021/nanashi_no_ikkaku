@@ -4,9 +4,9 @@
   <button @click = "submit">追加</button>
   <button @click = "reload">更新</button>
   <ul id="example-1">
-  <li v-for="(item, index) in words" :key="item">
+  <li v-for="item in words" :key="item">
     {{ item.word }}
-    <button v-on:click="$set(goodCount, index, goodCount[index]+1)">👍{{goodCount[index]}} </button>
+    <button v-on:click="">👍{{item.good}} </button>
   </li>
 </ul>
   </div>
@@ -18,7 +18,7 @@ export default {
   async asyncData({ params }) {
     return {
       words: await getAllDocs("words"),
-      goodCount: [0, 0, 0],
+      // goodCount: [0, 0, 0],
     };
   },
 
