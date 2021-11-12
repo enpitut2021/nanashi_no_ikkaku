@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input type="text" v-model="words.word" id="field" placeholder="ワード" />
+    <input type="text" v-model="field"  placeholder="ワード" />
     <button @click="submit">追加</button>
     <ul id="example-1">
       <li v-for="item in words" :key="item.id">
@@ -25,7 +25,7 @@ export default {
       const db = firebase.firestore();
       db.collection("test")
         .onSnapshot(function(snapshot) {
-          obj.length = 0;
+          obj.splice(0);
           snapshot.forEach((doc) => {
             const data = doc.data();
             data.id = doc.id;
@@ -40,7 +40,7 @@ export default {
     submit() {
       const db = firebase.firestore();
       let dbWords = db.collection("test");
-      let inputWord = this.words.word;
+      let inputWord = this.field;
       if (inputWord != "") {
         dbWords
           .add({
@@ -50,8 +50,7 @@ export default {
           .then((ref) => {
             console.log("Add ID: ", ref.id);
           });
-        var textField = document.getElementById("field");
-        textField.value = "";
+         this.field = ''
       }
     },
 
