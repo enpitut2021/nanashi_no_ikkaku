@@ -2,7 +2,6 @@
   <div>
     <input type="text" v-model="words.word" id="field" placeholder="ワード" />
     <button @click="submit">追加</button>
-    <button @click="reload">更新</button>
     <ul id="example-1">
       <li v-for="item in words" :key="item.id">
         {{ item.word }}
