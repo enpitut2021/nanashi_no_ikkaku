@@ -17,14 +17,14 @@ import firebase from "@/plugins/firebase";
 export default {
   async asyncData({ params }) {
     return {
-      words: await getAllDocs("word"),
+      words: await getAllDocs("test"),
     };
   },
 
   methods: {
     submit() {
       const db = firebase.firestore();
-      let dbWords = db.collection("word");
+      let dbWords = db.collection("test");
       let inputWord = this.words.word;
       if (inputWord != "") {
         dbWords
@@ -42,7 +42,7 @@ export default {
 
     good(id) {
       const db = firebase.firestore();
-      let dbWord = db.collection("word").doc(id);
+      let dbWord = db.collection("test").doc(id);
       dbWord.get().then(function (doc) {
         if (doc.exists) {
           console.log(dbWord);
@@ -60,7 +60,7 @@ export default {
     },
 
     async reload() {
-      this.words = await getAllDocs("word");
+      this.words = getAllDocs("test");
     },
   },
 };
@@ -68,13 +68,15 @@ export default {
 async function getAllDocs(collection) {
   let obj = [];
   const db = firebase.firestore();
-  let colRef = db.collection(collection);
-  const allSnapShot = await colRef.get();
-  allSnapShot.forEach((doc) => {
-    const data = doc.data();
-    data.id = doc.id;
-    obj.push(data);
-  });
+  db.collection(collection)
+    .onSnapshot(function(snapshot) {
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        data.id = doc.id;
+        obj.push(data);
+        console.log(obj)
+      });
+    });
   return obj;
 }
 </script>
