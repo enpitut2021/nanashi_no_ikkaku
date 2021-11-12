@@ -15,10 +15,26 @@
 <script>
 import firebase from "@/plugins/firebase";
 export default {
-  async asyncData({ params }) {
+  data() {
     return {
-      words: await getAllDocs("test"),
+      words: {},
     };
+  },
+
+  mounted(){
+    const obj = [];
+      const db = firebase.firestore();
+      db.collection("test")
+        .onSnapshot(function(snapshot) {
+          obj.length = 0;
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            data.id = doc.id;
+            obj.push(data)
+            console.log(obj)
+          });
+        });
+    this.words = obj;
   },
 
   methods: {
@@ -47,36 +63,16 @@ export default {
         if (doc.exists) {
           console.log(dbWord);
           let newGood = doc.data().good + 1;
-
           dbWord
             .update({
               good: newGood,
             })
             .then((ref) => {
-              console.log("Add ID: ", ref.id);
+              console.log("Good can't be updated.");
             });
         }
       });
     },
-
-    async reload() {
-      this.words = getAllDocs("test");
-    },
   },
 };
-
-async function getAllDocs(collection) {
-  let obj = [];
-  const db = firebase.firestore();
-  db.collection(collection)
-    .onSnapshot(function(snapshot) {
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        data.id = doc.id;
-        obj.push(data);
-        console.log(obj)
-      });
-    });
-  return obj;
-}
 </script>
