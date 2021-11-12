@@ -5,7 +5,9 @@
     <button @click="reload">更新</button>
     <ul id="example-1">
       <li v-for="item in words" :key="item.id">
+      <div v-bind:style="{ fontSize: item.good + 'rem' }">
         {{ item.word }}
+	</div>
         <button @click="good(item.id)">👍{{ item.good }}</button>
       </li>
     </ul>
