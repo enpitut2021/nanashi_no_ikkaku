@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>パッと思いつく単語をいれよう</h1>
-    <input type="text" />
+    <input type="text" v-model="field" placeholder="ワード" />
     <nuxt-link to="/main">
       <button @click="submit">追加</button>
     </nuxt-link>
@@ -29,10 +29,10 @@ export default {
           .then((ref) => {
             console.log("Add ID: ", ref.id);
           });
-         this.field = ''
+        this.field = "";
       }
     },
   },
-}
+};
 </script>
 
