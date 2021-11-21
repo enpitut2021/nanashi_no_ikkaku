@@ -1,10 +1,16 @@
 <template>
-  <div>
-    <div>
+  <div style="width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center">
+    <div style="max-width: 50%; text-align: center; font-size: 30px; margin: 30px">
       <label>私は</label>
-      <input type="text" v-model="inputs[0]" placeholder="ニックネーム" />
-      <label>です。最近のマイブームは</label>
-      <input type="text" v-model="inputs[1]" placeholder="読書" />
+      <input style="font-size: 30px" type="text" v-model="inputs[0]" placeholder="ニックネーム" />
+      <label>です。</label>
+      <br>
+      <label>最近のマイブームは</label>
+      <input style="font-size: 30px" type="text" v-model="inputs[1]" placeholder="読書" />
+      <label>です。</label>
+      <br>
+      <label>好きなお菓子は</label>
+      <input style="font-size: 30px" type="text" v-model="inputs[2]" placeholder="マシュマロ" />
       <label>です。</label>
     </div>
     <nuxt-link to="/main">
