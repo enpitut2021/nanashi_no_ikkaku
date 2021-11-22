@@ -14,7 +14,7 @@
       <label>です。</label>
     </div>
     <nuxt-link to="/main">
-      <button @click="submit">追加</button>
+      <button @click="submit">こんにちは</button>
     </nuxt-link>
   </div>
 </template>
