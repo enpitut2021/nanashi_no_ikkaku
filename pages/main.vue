@@ -3,7 +3,7 @@
     <div>
       <input type="text" v-model="field"  placeholder="ワード" />
       <button @click="submit">追加</button>
-      <h2>ここに表示したい</h2>
+      <h2 v-if="time" style="position: fixed; right: 0; bottom: 0;">いちばん北の人はだれですか?? </h2>
     </div>
     <ul id="example-1">
       <li v-for="item in words" :key="item.id">
@@ -22,6 +22,7 @@ export default {
   data() {
     return {
       words: {},
+      time: true,
     };
   },
 
