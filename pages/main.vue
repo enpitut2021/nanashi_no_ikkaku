@@ -22,7 +22,7 @@ export default {
   data() {
     return {
       words: {},
-      time: true,
+      time: false,
     };
   },
 
@@ -75,6 +75,10 @@ export default {
           });
          this.field = ''
       }
+    },
+
+    showOdai() {
+      this.time = true;
     },
 
     good(id) {
