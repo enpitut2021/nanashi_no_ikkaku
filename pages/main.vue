@@ -1,7 +1,10 @@
 <template>
   <div>
-    <input type="text" v-model="field"  placeholder="ワード" />
-    <button @click="submit">追加</button>
+    <div>
+      <input type="text" v-model="field"  placeholder="ワード" />
+      <button @click="submit">追加</button>
+      <h2>ここに表示したい</h2>
+    </div>
     <ul id="example-1">
       <li v-for="item in words" :key="item.id">
         <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'rem' }">
