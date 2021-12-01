@@ -3,7 +3,7 @@
     <div>
       <input type="text" v-model="field"  placeholder="ワード" />
       <button @click="submit">追加</button>
-      <h2 v-if="time" style="position: fixed; right: 0; bottom: 0;">いちばん北の人はだれですか?? </h2>
+      <h2 v-if="time" >いちばん北の人はだれですか?? </h2>
     </div>
     <ul id="example-1">
       <li v-for="item in words" :key="item.id">
@@ -23,6 +23,7 @@ export default {
     return {
       words: {},
       time: false,
+      field: "",
     };
   },
 
@@ -55,7 +56,8 @@ export default {
     	  obj.sort((a, b) =>
                (a.good > b.good) ? -1 : ((a.good < b.good) ? 1 : 0));
     	  // console.log(obj);
-        setTimeout(this.showOdai, 3000);
+        setTimeout(()=>{this.time = true;
+      console.log("お題が出る")}, 3000);
         });
     this.words = obj;
   },
@@ -78,10 +80,10 @@ export default {
       }
     },
 
-    showOdai() {
-      time = true;
-      console.log("お題が出る")
-    },
+    // showOdai() {
+    //   time = true;
+    //   console.log("お題が出る")
+    // },
 
     good(id) {
       const db = firebase.firestore();
