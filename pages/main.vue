@@ -55,6 +55,7 @@ export default {
     	  obj.sort((a, b) =>
                (a.good > b.good) ? -1 : ((a.good < b.good) ? 1 : 0));
     	  // console.log(obj);
+        setTimeout(this.showOdai, 3000);
         });
     this.words = obj;
   },
@@ -78,7 +79,8 @@ export default {
     },
 
     showOdai() {
-      this.time = true;
+      time = true;
+      console.log("お題が出る")
     },
 
     good(id) {
