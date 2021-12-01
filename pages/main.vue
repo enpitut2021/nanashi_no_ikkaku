@@ -23,6 +23,7 @@ export default {
 	return {
 	    words: {},
 	    time: false,
+	    timerId: undefined,
 	    field: "",
 	};
     },
@@ -44,8 +45,15 @@ export default {
     		obj.sort((a, b) =>
 		    (a.good > b.good) ? -1 : ((a.good < b.good) ? 1 : 0));
     		// console.log(obj);
-            });
-	setTimeout(function(){
+		// お題表示タイマーのリセット
+		this.time = false; //一旦表示を消す
+		clearTimeout(this.timerId);
+		//　新しくタイマーの設定
+		this.timerId = setTimeout(function(){
+		    this.time = true;
+		}.bind(this), 3000);
+            }.bind(this));
+	this.timerId = setTimeout(function(){
 	    this.time = true;
 	}.bind(this), 3000);
 	console.log(this.time);
