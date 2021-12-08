@@ -3,16 +3,16 @@
     <div>
       <input type="text" v-model="field"  placeholder="ワード" />
       <button @click="submit">追加</button>
-      <h2 v-show="time">いちばん北の人はだれですか?? </h2>
+      <!-- <h2 v-show="time">いちばん北の人はだれですか?? </h2> -->
     </div>
-    <ul id="example-1">
-      <li v-for="item in words" :key="item.id">
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 50px; row-gap: 10px">
+      <div v-for="item in words" :key="item.id" style="background-color: rgba(0,0,0,0.2); border-radius: 30px">
         <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'rem' }">
           {{ item.word }}
         </div>
         <button @click="good(item.id)">👍{{ item.good }}</button>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>
 </template>
 
