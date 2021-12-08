@@ -5,13 +5,13 @@
       <button @click="submit">追加</button>
       <h2 v-show="time">いちばん北の人はだれですか?? </h2>
     </div>
-    <div style="display: flex; flex-wrap: wrap">
-    <div v-for="item in words" :key="item.id" style="background-color: red">
-      <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'rem' }">
-        {{ item.word }}
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 50px; row-gap: 10px">
+      <div v-for="item in words" :key="item.id" style="background-color: rgba(0,0,0,0.2); border-radius: 30px">
+        <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'rem' }">
+          {{ item.word }}
+        </div>
+        <button @click="good(item.id)">👍{{ item.good }}</button>
       </div>
-      <button @click="good(item.id)">👍{{ item.good }}</button>
-    </div>
     </div>
   </div>
 </template>
