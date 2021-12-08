@@ -5,14 +5,12 @@
       <button @click="submit">追加</button>
       <h2 v-show="time">いちばん北の人はだれですか?? </h2>
     </div>
-    <ul id="example-1">
-      <li v-for="item in words" :key="item.id">
-        <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'rem' }">
-          {{ item.word }}
-        </div>
-        <button @click="good(item.id)">👍{{ item.good }}</button>
-      </li>
-    </ul>
+    <div v-for="item in words" :key="item.id">
+      <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'rem' }">
+        {{ item.word }}
+      </div>
+      <button @click="good(item.id)">👍{{ item.good }}</button>
+    </div>
   </div>
 </template>
 
