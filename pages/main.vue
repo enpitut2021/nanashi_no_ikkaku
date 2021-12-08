@@ -5,12 +5,14 @@
       <button @click="submit">追加</button>
       <!-- <h2 v-show="time">いちばん北の人はだれですか?? </h2> -->
     </div>
-    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 50px; row-gap: 10px">
-      <div v-for="item in words" :key="item.id" style="background-color: rgba(0,0,0,0.2); border-radius: 30px">
-        <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'rem' }">
-          {{ item.word }}
+    <div v-for="row in arrangedWords" :key="row.id" style="margin: 50px">
+      <div style="display: flex; justify-content: center; align-items: center; gap: 50px">
+        <div v-for="item in row" :key="item.id" style="background-color: rgba(0,0,0,0.2); border-radius: 30px">
+          <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'rem' }">
+            {{ item.word }}
+          </div>
+          <button @click="good(item.id)">👍{{ item.good }}</button>
         </div>
-        <button @click="good(item.id)">👍{{ item.good }}</button>
       </div>
     </div>
   </div>
@@ -22,6 +24,7 @@ export default {
     data() {
 	return {
 	    words: {},
+	    arrangedWords: "hi",
 	    time: false,
 	    timerId: undefined,
 	    field: "",
@@ -40,11 +43,15 @@ export default {
 		    obj.push(data)
 		    // console.log(obj)
 		});
+		
 		// ワードの配列の更新の度にソートする。いいね数が大きいのが先に来るのに注意
 		// アロー関数（arrow function）と三項演算子(ternary operator）を使ってる。
     		obj.sort((a, b) =>
 		    (a.good > b.good) ? -1 : ((a.good < b.good) ? 1 : 0));
-    		// console.log(obj);
+		
+		// 表示用にワードを菱形に変形（二次元配列）
+		this.arrangedWords = this.arrangeWords(obj);
+		
 		// お題表示タイマーのリセット
 		this.time = false; //一旦表示を消す
 		clearTimeout(this.timerId);
@@ -63,43 +70,71 @@ export default {
     methods: {
 	submit() {
 	    const db = firebase.firestore();
-      let dbWords = db.collection("test");
-      let inputWord = this.field;
-      if (inputWord != "") {
-        dbWords
-          .add({
-            word: inputWord,
-            good: 0,
-          })
-          .then((ref) => {
-            console.log("Add ID: ", ref.id);
-          });
-         this.field = ''
-      }
-    },
-
-    // showOdai() {
-    //   time = true;
-    //   console.log("お題が出る")
-    // },
-
-    good(id) {
-      const db = firebase.firestore();
-      let dbWord = db.collection("test").doc(id);
-      dbWord.get().then(function (doc) {
-        if (doc.exists) {
-          console.log(dbWord);
-          let newGood = doc.data().good + 1;
-          dbWord
-            .update({
-              good: newGood,
-            })
-            .then((ref) => {
-              console.log("Good can't be updated.");
-            });
-        }
-      });
-    },
+	    let dbWords = db.collection("test");
+	    let inputWord = this.field;
+	    if (inputWord != "") {
+		dbWords
+		    .add({
+			word: inputWord,
+			good: 0,
+		    })
+		    .then((ref) => {
+			console.log("Add ID: ", ref.id);
+		    });
+		this.field = ''
+	    }
+	},
+	
+	// showOdai() {
+	//   time = true;
+	//   console.log("お題が出る")
+	// },
+	
+	good(id) {
+	    const db = firebase.firestore();
+	    let dbWord = db.collection("test").doc(id);
+	    dbWord.get().then(function (doc) {
+		if (doc.exists) {
+		    console.log(dbWord);
+		    let newGood = doc.data().good + 1;
+		    dbWord
+			.update({
+			    good: newGood,
+			})
+			.then((ref) => {
+			    console.log("Good can't be updated.");
+			});
+		}
+	    });
+	},
+	
+	arrangeWords(words) {
+	    // 並び替えられたワードの配列。
+	    // index=0からから一行ずつそれぞれ表示（手動改行してる）
+	    let arrangedWords = [[]];
+	    // 次にワードを追加する行が何行目か
+	    let nextAddRow = 0;
+	    // 菱形の半径
+	    let shapeSize = 1;
+	    words.forEach((el, i) => {
+	      if (i % 2 == 0)
+		arrangedWords[nextAddRow].unshift(el); // i行目の左端に追加
+	      else {
+		arrangedWords[nextAddRow++].push(el);　// i行目の右端に追加
+		//　i番目のワードがshapeSizeが変わる前最後のワードであれば
+		if (i + 1 == 2 * (shapeSize * shapeSize)) {
+		    nextAddRow = 0;
+		    shapeSize++;
+		    // 新しく菱形の上と下に行を追加
+		    arrangedWords.unshift([]);
+		    arrangedWords.push([]);
+		}
+	      }
+	    });
+	    console.log("words arranged!");
+	    console.log(arrangedWords);
+            return arrangedWords;
+    }
   },
 };
 </script>
