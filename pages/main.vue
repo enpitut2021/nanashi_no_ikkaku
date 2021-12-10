@@ -5,10 +5,10 @@
       <button @click="submit">追加</button>
       <!-- <h2 v-show="time">いちばん北の人はだれですか?? </h2> -->
     </div>
-    <div v-for="row in arrangedWords" :key="row.id" style="margin: 50px">
-      <div style="display: flex; justify-content: center; align-items: center; gap: 50px">
+    <div v-for="row in arrangedWords" :key="row.id" style="margin: 20px">
+      <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
         <div v-for="item in row" :key="item.id" style="background-color: rgba(0,0,0,0.2); border-radius: 30px">
-          <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'rem' }">
+          <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
             {{ item.word }}
           </div>
           <button @click="good(item.id)">👍{{ item.good }}</button>
@@ -17,6 +17,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import firebase from "@/plugins/firebase";
@@ -46,8 +47,8 @@ export default {
 		
 		// ワードの配列の更新の度にソートする。いいね数が大きいのが先に来るのに注意
 		// アロー関数（arrow function）と三項演算子(ternary operator）を使ってる。
-    		obj.sort((a, b) =>
-		    (a.good > b.good) ? -1 : ((a.good < b.good) ? 1 : 0));
+    		// obj.sort((a, b) =>
+		    // (a.good > b.good) ? -1 : ((a.good < b.good) ? 1 : 0));
 		
 		// 表示用にワードを菱形に変形（二次元配列）
 		this.arrangedWords = this.arrangeWords(obj);
