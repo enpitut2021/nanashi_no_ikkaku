@@ -6,8 +6,8 @@
       <!-- <h2 v-show="time">いちばん北の人はだれですか?? </h2> -->
     </div>
     <div>
-      <button @click="submit">終了</button>
-      {{this.words[0].word}}
+      <button @click="showName=true">終了</button>
+      <h2 v-show="showName">おすすめのチーム名：　{{(this.words.length != 0) ? this.words[0].word : ""}}</h2>
     </div>
     <div v-for="row in arrangedWords" :key="row.id" style="margin: 50px">
       <div style="display: flex; justify-content: center; align-items: center; gap: 50px">
@@ -27,11 +27,12 @@ import firebase from "@/plugins/firebase";
 export default {
     data() {
 	return {
-	    words: {},
+	    words: [],
 	    arrangedWords: "hi",
 	    time: false,
 	    timerId: undefined,
 	    field: "",
+      showName: false
 	};
     },
     
