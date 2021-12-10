@@ -11,7 +11,7 @@
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
             {{ item.word }}
           </div>
-          <button @click="good(item.id)">👍{{ item.good }}</button>
+          <button>👍{{ item.good }}</button>
         </div>
       </div>
     </div>
