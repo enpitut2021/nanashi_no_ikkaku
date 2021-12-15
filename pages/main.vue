@@ -7,12 +7,11 @@
     </div>
     <div v-for="row in arrangedWords" :key="row.id" style="margin: 20px">
       <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-        <div @click="good(item.id)" v-for="item in row" :key="item.id" style="background-color: rgba(0,0,0,0.2); border-radius: 30px">
+        <button @click="good(item.id)" v-for="item in row" :key="item.id" style="background-color: rgba(0,0,0,0.2); border-radius: 30px">
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
-            {{ item.word }}
+            {{ item.word }}👍{{ item.good }}
           </div>
-          <button>👍{{ item.good }}</button>
-        </div>
+        </button>
       </div>
     </div>
   </div>
