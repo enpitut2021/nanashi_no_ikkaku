@@ -61,6 +61,7 @@ export default {
       const db = firebase.firestore();
       db.collection("odai").doc("odai").onSnapshot((snapshot) => {
 	  console.log(snapshot.data()["odaiIndex"]);
+	  this.index = snapshot.data()["odaiIndex"];
 	  });
     db.collection("test").onSnapshot(
       function(snapshot) {
@@ -85,7 +86,6 @@ export default {
         //　新しくタイマーの設定
         this.timerId = setTimeout(
           function() {
-			this.index++;
             this.time = true;
           }.bind(this),
           30000
@@ -94,7 +94,6 @@ export default {
     );
     this.timerId = setTimeout(
       function() {
-		this.index++;
         this.time = true;
       }.bind(this),
       30000
@@ -119,6 +118,10 @@ export default {
           });
         this.field = "";
       }
+	// firebase上でお題のindexを１増やす
+	db.collection("odai").doc("odai").set({
+	    odaiIndex: this.index + 1
+	    });
     },
 
     // showOdai() {
