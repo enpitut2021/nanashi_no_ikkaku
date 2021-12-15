@@ -3,7 +3,7 @@
     <div>
       <input type="text" v-model="field" placeholder="ワード" />
       <button @click="submit">追加</button>
-      <!--<h2 v-show="time">{{ this.odai[index] }}</h2>-->
+      <h2 v-show="time">{{ this.odai[index] }}</h2>
     </div>
     <div>
       <button @click="showName = true">終了</button>
@@ -16,7 +16,7 @@
       <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
         <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji" style="background-color: rgba(0,0,0,0.2); border-radius: 30px; border: 0; box-shadow: 5px 5px 5px gray; transition: .3s;">
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
-            {{ item.word }}👍{{ item.good }}
+            {{ item.word }}👍
           </div>
         </button>
       </div>
@@ -58,7 +58,11 @@ export default {
 
   mounted() {
     const obj = [];
-    const db = firebase.firestore();
+      const db = firebase.firestore();
+      db.collection("odai").doc("odai").onSnapshot((snapshot) => {
+	  console.log(snapshot.data()["odaiIndex"]);
+	  this.index = snapshot.data()["odaiIndex"];
+	  });
     db.collection("test").onSnapshot(
       function(snapshot) {
         obj.splice(0);
@@ -82,7 +86,6 @@ export default {
         //　新しくタイマーの設定
         this.timerId = setTimeout(
           function() {
-			this.index++;
             this.time = true;
           }.bind(this),
           30000
@@ -91,7 +94,6 @@ export default {
     );
     this.timerId = setTimeout(
       function() {
-		this.index++;
         this.time = true;
       }.bind(this),
       30000
@@ -116,6 +118,10 @@ export default {
           });
         this.field = "";
       }
+	// firebase上でお題のindexを１増やす
+	db.collection("odai").doc("odai").set({
+	    odaiIndex: this.index + 1
+	    });
     },
 
     // showOdai() {
