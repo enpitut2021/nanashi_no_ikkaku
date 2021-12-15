@@ -11,6 +11,7 @@
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
       </h2>
+	  <h2 v-show="shoukai">自己紹介をしてみよう</h2>
     </div>
     <div v-for="row in arrangedWords" :key="row.id" style="margin: 20px">
       <div
