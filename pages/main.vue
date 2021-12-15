@@ -58,7 +58,10 @@ export default {
 
   mounted() {
     const obj = [];
-    const db = firebase.firestore();
+      const db = firebase.firestore();
+      db.collection("odai").doc("odai").onSnapshot((snapshot) => {
+	  console.log(snapshot.data()["odaiIndex"]);
+	  });
     db.collection("test").onSnapshot(
       function(snapshot) {
         obj.splice(0);
