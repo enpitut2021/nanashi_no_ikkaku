@@ -84,7 +84,7 @@ export default {
 			this.index++;
             this.time = true;
           }.bind(this),
-          3000
+          30000
         );
       }.bind(this)
     );
@@ -93,7 +93,7 @@ export default {
 		this.index++;
         this.time = true;
       }.bind(this),
-      3000
+      30000
     );
     console.log(this.time);
     this.words = obj;
