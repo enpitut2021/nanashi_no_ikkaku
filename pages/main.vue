@@ -14,7 +14,7 @@
     </div>
     <div v-for="row in arrangedWords" :key="row.id" style="margin: 20px">
       <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-        <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji" style="background-color: rgba(0,0,0,0.2); border-radius: 30px; border: 0; box-shadow: 5px 5px 5px gray;">
+        <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji" style="background-color: rgba(0,0,0,0.2); border-radius: 30px; border: 0; box-shadow: 5px 5px 5px gray; transition: .3s;">
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
             {{ item.word }}👍{{ item.good }}
           </div>
@@ -25,7 +25,10 @@
 </template>
 
 <style lang="css" scoped>
-.moji button:hover{box-shadow: none;} 
+button:hover{
+	box-shadow: none;
+	transform: translate3d(0, 5px, 0);
+} 
 </style>
 
 
