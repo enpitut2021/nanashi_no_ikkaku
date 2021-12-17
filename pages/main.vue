@@ -100,11 +100,13 @@ export default {
       }.bind(this)
     );
     this.timerId = setTimeout(
-      function() {
-        this.time = true;
-      }.bind(this),
-      3000
-    );
+	function () {
+           this.time = true;
+           // 30秒後にお題を非表示にする
+           setTimeout(() => {
+           this.time = false;
+           }, 3000);
+	}.bind(this), 3000);
     console.log(this.time);
     this.words = obj;
   },
@@ -142,9 +144,15 @@ export default {
          30000
         );
 	},
+
+      
     // showOdai() {
-    //   time = true;
-    //   console.log("お題が出る")
+    //     this.time = true;
+    // 	// 30秒後にお題を非表示にする
+    // 	setTimeout(() => {
+    //       this.time = false;
+    // 	}, 3000);
+      
     // },
 
     good(id) {
