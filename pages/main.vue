@@ -53,7 +53,8 @@ export default {
         "自分を一つの漢字で表してみましょう"
       ],
       index: -1,
-      showName: false
+      showName: false,
+      shoukai: true
     };
   },
 
@@ -88,17 +89,13 @@ export default {
         this.timerId = setTimeout(
           function() {
             this.time = true;
+            this.shoukai = false;
           }.bind(this),
           30000
         );
       }.bind(this)
     );
-    this.timerId = setTimeout(
-      function() {
-        this.time = true;
-      }.bind(this),
-      30000
-    );
+
     console.log(this.time);
     this.words = obj;
   },
