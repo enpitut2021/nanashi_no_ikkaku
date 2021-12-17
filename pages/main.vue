@@ -2,8 +2,14 @@
   <div>
     <div>
       <input type="text" v-model="field" placeholder="ワード" />
-      <button @click="submit">追加</button>
-      <h2 v-show="time">{{ this.odai[index] }}</h2>
+      <button @click="submit(field); field=''">追加</button>
+      <div v-show="time">
+        <h2>
+	  		{{ this.odai[index] }}
+          <input type="text" v-model="odaiAns" placeholder="答え" />
+          <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
+		</h2>
+      </div>
     </div>
     <div>
       <button @click="showName = true">終了</button>
@@ -11,10 +17,11 @@
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
       </h2>
+	  <h2 v-show="shoukai">自己紹介をしてみよう</h2>
     </div>
     <div v-for="row in arrangedWords" :key="row.id" style="margin: 20px">
       <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-        <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji" style="background-color: rgba(0,0,0,0.2); border-radius: 30px; border: 0; box-shadow: 5px 5px 5px gray; transition: .3s;">
+        <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji">
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
             {{ item.word }}👍
           </div>
@@ -25,10 +32,22 @@
 </template>
 
 <style lang="css" scoped>
-button:hover{
-	box-shadow: none;
-	transform: translate3d(0, 5px, 0);
+h2{
+  margin:0;
+}
+
+.moji{
+  background-color: rgba(0,0,0,0.2); 
+  border-radius: 30px; 
+  border: 0; 
+  box-shadow: 5px 5px 5px gray; 
+  transition: .3s;
 } 
+
+.moji:hover{
+  position:relative;
+	transform: translate3d(0, 5px, 0);
+}
 </style>
 
 
@@ -42,6 +61,7 @@ export default {
       time: false,
       timerId: undefined,
       field: "",
+	  odaiAns: "",
       odai: [
         "出身が一番北の人は誰ですか？",
         "来世は何の生き物になりたいですか？",
@@ -52,7 +72,8 @@ export default {
         "自分を一つの漢字で表してみましょう"
       ],
       index: -1,
-      showName: false
+      showName: false,
+      shoukai: true
     };
   },
 
@@ -81,32 +102,35 @@ export default {
         obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
 
         // お題表示タイマーのリセット
-        this.time = false; //一旦表示を消す
-        clearTimeout(this.timerId);
+        // this.time = false; //一旦表示を消す
+        // clearTimeout(this.timerId);
         //　新しくタイマーの設定
-        this.timerId = setTimeout(
-          function() {
-            this.time = true;
-          }.bind(this),
-          30000
-        );
+        // this.timerId = setTimeout(
+        //  function() {
+        //    this.time = true;
+        //  }.bind(this),
+        //  30000
+        // );
       }.bind(this)
     );
     this.timerId = setTimeout(
-      function() {
-        this.time = true;
-      }.bind(this),
-      30000
-    );
+	function () {
+	   this.shoukai = false;
+           this.time = true;
+           // 30秒後にお題を非表示にする
+           setTimeout(() => {
+           this.time = false;
+           }, 30000);
+	}.bind(this), 30000);
     console.log(this.time);
     this.words = obj;
   },
 
   methods: {
-    submit() {
+    submit(field) {
       const db = firebase.firestore();
       let dbWords = db.collection("test");
-      let inputWord = this.field;
+      let inputWord = field;
       if (inputWord != "") {
         dbWords
           .add({
@@ -116,17 +140,36 @@ export default {
           .then(ref => {
             console.log("Add ID: ", ref.id);
           });
-        this.field = "";
       }
-	// firebase上でお題のindexを１増やす
+    },
+
+	answer(){
+		// お題表示タイマーのリセット
+        this.time = false; //一旦表示を消す
+        clearTimeout(this.timerId);
+        //　新しくタイマーの設定
+        this.timerId = setTimeout(
+         function() {
+           this.time = true;
+         }.bind(this),
+         30000
+        );
+	    
+	    // firebase上でお題のindexを１増やす
+      const db = firebase.firestore();
 	db.collection("odai").doc("odai").set({
 	    odaiIndex: this.index + 1
 	    });
-    },
+	},
 
+      
     // showOdai() {
-    //   time = true;
-    //   console.log("お題が出る")
+    //     this.time = true;
+    // 	// 30秒後にお題を非表示にする
+    // 	setTimeout(() => {
+    //       this.time = false;
+    // 	}, 30000);
+      
     // },
 
     good(id) {
