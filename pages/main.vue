@@ -2,13 +2,13 @@
   <div>
     <div>
       <input type="text" v-model="field" placeholder="ワード" />
-      <button @click="submit">追加</button>
+      <button @click="submit(field); field=''">追加</button>
       <div v-show="time">
         <h2>
-	  {{ this.odai[index] }}
-          <input type="text" v-model="field" placeholder="答え" />
-          <button @click="submit">追加</button>
-	</h2>
+	  		{{ this.odai[index] }}
+          <input type="text" v-model="odaiAns" placeholder="答え" />
+          <button @click="submit(odaiAns); odaiAns=''">追加</button>
+		</h2>
       </div>
     </div>
     <div>
@@ -48,6 +48,7 @@ export default {
       time: false,
       timerId: undefined,
       field: "",
+	  odaiAns: "",
       odai: [
         "出身が一番北の人は誰ですか？",
         "来世は何の生き物になりたいですか？",
@@ -109,10 +110,10 @@ export default {
   },
 
   methods: {
-    submit() {
+    submit(field) {
       const db = firebase.firestore();
       let dbWords = db.collection("test");
-      let inputWord = this.field;
+      let inputWord = field;
       if (inputWord != "") {
         dbWords
           .add({
@@ -122,7 +123,6 @@ export default {
           .then(ref => {
             console.log("Add ID: ", ref.id);
           });
-        this.field = "";
       }
 	// firebase上でお題のindexを１増やす
 	db.collection("odai").doc("odai").set({
