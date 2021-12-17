@@ -3,7 +3,13 @@
     <div>
       <input type="text" v-model="field" placeholder="ワード" />
       <button @click="submit">追加</button>
-      <h2 v-show="time">{{ this.odai[index] }}</h2>
+      <div v-show="time">
+        <h2>
+	  {{ this.odai[index] }}
+          <input type="text" v-model="field" placeholder="答え" />
+          <button @click="submit">追加</button>
+	</h2>
+      </div>
     </div>
     <div>
       <button @click="showName = true">終了</button>
