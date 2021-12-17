@@ -115,6 +115,7 @@ export default {
     );
     this.timerId = setTimeout(
 	function () {
+	   this.shoukai = false;
            this.time = true;
            // 30秒後にお題を非表示にする
            setTimeout(() => {
