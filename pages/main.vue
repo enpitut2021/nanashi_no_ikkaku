@@ -81,22 +81,22 @@ export default {
         obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
 
         // お題表示タイマーのリセット
-        this.time = false; //一旦表示を消す
-        clearTimeout(this.timerId);
+        // this.time = false; //一旦表示を消す
+        // clearTimeout(this.timerId);
         //　新しくタイマーの設定
-        this.timerId = setTimeout(
-          function() {
-            this.time = true;
-          }.bind(this),
-          30000
-        );
+        // this.timerId = setTimeout(
+        //  function() {
+        //    this.time = true;
+        //  }.bind(this),
+        //  30000
+        // );
       }.bind(this)
     );
     this.timerId = setTimeout(
       function() {
         this.time = true;
       }.bind(this),
-      30000
+      3000
     );
     console.log(this.time);
     this.words = obj;
