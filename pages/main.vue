@@ -7,7 +7,7 @@
         <h2>
 	  		{{ this.odai[index] }}
           <input type="text" v-model="odaiAns" placeholder="答え" />
-          <button @click="submit(odaiAns); odaiAns=''">追加</button>
+          <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
 		</h2>
       </div>
     </div>
@@ -130,6 +130,18 @@ export default {
 	    });
     },
 
+	answer(){
+		// お題表示タイマーのリセット
+        this.time = false; //一旦表示を消す
+        clearTimeout(this.timerId);
+        //　新しくタイマーの設定
+        this.timerId = setTimeout(
+         function() {
+           this.time = true;
+         }.bind(this),
+         30000
+        );
+	},
     // showOdai() {
     //   time = true;
     //   console.log("お題が出る")
