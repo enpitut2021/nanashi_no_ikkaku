@@ -105,8 +105,8 @@ export default {
            // 30秒後にお題を非表示にする
            setTimeout(() => {
            this.time = false;
-           }, 3000);
-	}.bind(this), 3000);
+           }, 30000);
+	}.bind(this), 30000);
     console.log(this.time);
     this.words = obj;
   },
@@ -126,10 +126,6 @@ export default {
             console.log("Add ID: ", ref.id);
           });
       }
-	// firebase上でお題のindexを１増やす
-	db.collection("odai").doc("odai").set({
-	    odaiIndex: this.index + 1
-	    });
     },
 
 	answer(){
@@ -143,6 +139,12 @@ export default {
          }.bind(this),
          30000
         );
+	    
+	    // firebase上でお題のindexを１増やす
+      const db = firebase.firestore();
+	db.collection("odai").doc("odai").set({
+	    odaiIndex: this.index + 1
+	    });
 	},
 
       
@@ -151,7 +153,7 @@ export default {
     // 	// 30秒後にお題を非表示にする
     // 	setTimeout(() => {
     //       this.time = false;
-    // 	}, 3000);
+    // 	}, 30000);
       
     // },
 
