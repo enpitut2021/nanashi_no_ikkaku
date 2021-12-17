@@ -26,6 +26,10 @@
 </template>
 
 <style lang="css" scoped>
+h2{
+  margin:0;
+}
+
 .moji{
   background-color: rgba(0,0,0,0.2); 
   border-radius: 30px; 
