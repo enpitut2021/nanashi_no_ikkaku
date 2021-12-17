@@ -2,8 +2,14 @@
   <div>
     <div>
       <input type="text" v-model="field" placeholder="ワード" />
-      <button @click="submit">追加</button>
-      <h2 v-show="time">{{ this.odai[index] }}</h2>
+      <button @click="submit(field); field=''">追加</button>
+      <div v-show="time">
+        <h2>
+	  		{{ this.odai[index] }}
+          <input type="text" v-model="odaiAns" placeholder="答え" />
+          <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
+		</h2>
+      </div>
     </div>
     <div>
       <button @click="showName = true">終了</button>
@@ -55,6 +61,7 @@ export default {
       time: false,
       timerId: undefined,
       field: "",
+	  odaiAns: "",
       odai: [
         "出身が一番北の人は誰ですか？",
         "来世は何の生き物になりたいですか？",
@@ -95,28 +102,34 @@ export default {
         obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
 
         // お題表示タイマーのリセット
-        this.time = false; //一旦表示を消す
-        clearTimeout(this.timerId);
+        // this.time = false; //一旦表示を消す
+        // clearTimeout(this.timerId);
         //　新しくタイマーの設定
-        this.timerId = setTimeout(
-          function() {
-            this.time = true;
-            this.shoukai = false;
-          }.bind(this),
-          30000
-        );
+        // this.timerId = setTimeout(
+        //  function() {
+        //    this.time = true;
+        //  }.bind(this),
+        //  30000
+        // );
       }.bind(this)
     );
-
+    this.timerId = setTimeout(
+	function () {
+           this.time = true;
+           // 30秒後にお題を非表示にする
+           setTimeout(() => {
+           this.time = false;
+           }, 30000);
+	}.bind(this), 30000);
     console.log(this.time);
     this.words = obj;
   },
 
   methods: {
-    submit() {
+    submit(field) {
       const db = firebase.firestore();
       let dbWords = db.collection("test");
-      let inputWord = this.field;
+      let inputWord = field;
       if (inputWord != "") {
         dbWords
           .add({
@@ -126,17 +139,36 @@ export default {
           .then(ref => {
             console.log("Add ID: ", ref.id);
           });
-        this.field = "";
       }
-	// firebase上でお題のindexを１増やす
+    },
+
+	answer(){
+		// お題表示タイマーのリセット
+        this.time = false; //一旦表示を消す
+        clearTimeout(this.timerId);
+        //　新しくタイマーの設定
+        this.timerId = setTimeout(
+         function() {
+           this.time = true;
+         }.bind(this),
+         30000
+        );
+	    
+	    // firebase上でお題のindexを１増やす
+      const db = firebase.firestore();
 	db.collection("odai").doc("odai").set({
 	    odaiIndex: this.index + 1
 	    });
-    },
+	},
 
+      
     // showOdai() {
-    //   time = true;
-    //   console.log("お題が出る")
+    //     this.time = true;
+    // 	// 30秒後にお題を非表示にする
+    // 	setTimeout(() => {
+    //       this.time = false;
+    // 	}, 30000);
+      
     // },
 
     good(id) {
