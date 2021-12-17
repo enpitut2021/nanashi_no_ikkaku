@@ -11,10 +11,11 @@
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
       </h2>
+	  <h2 v-show="shoukai">自己紹介をしてみよう</h2>
     </div>
     <div v-for="row in arrangedWords" :key="row.id" style="margin: 20px">
       <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-        <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji" style="background-color: rgba(0,0,0,0.2); border-radius: 30px; border: 0; box-shadow: 5px 5px 5px gray; transition: .3s;">
+        <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji">
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
             {{ item.word }}👍
           </div>
@@ -25,10 +26,22 @@
 </template>
 
 <style lang="css" scoped>
-button:hover{
-	box-shadow: none;
-	transform: translate3d(0, 5px, 0);
+h2{
+  margin:0;
+}
+
+.moji{
+  background-color: rgba(0,0,0,0.2); 
+  border-radius: 30px; 
+  border: 0; 
+  box-shadow: 5px 5px 5px gray; 
+  transition: .3s;
 } 
+
+.moji:hover{
+  position:relative;
+	transform: translate3d(0, 5px, 0);
+}
 </style>
 
 
@@ -52,7 +65,8 @@ export default {
         "自分を一つの漢字で表してみましょう"
       ],
       index: -1,
-      showName: false
+      showName: false,
+      shoukai: true
     };
   },
 
@@ -87,17 +101,13 @@ export default {
         this.timerId = setTimeout(
           function() {
             this.time = true;
+            this.shoukai = false;
           }.bind(this),
           30000
         );
       }.bind(this)
     );
-    this.timerId = setTimeout(
-      function() {
-        this.time = true;
-      }.bind(this),
-      30000
-    );
+
     console.log(this.time);
     this.words = obj;
   },
