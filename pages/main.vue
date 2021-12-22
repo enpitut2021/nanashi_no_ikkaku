@@ -5,16 +5,16 @@
       <input type="text" v-model="field" placeholder="ワード" />
       <button @click="submit(field); field=''">追加</button>
       </div>
-      <div v-show="time" style="position: fixed; top: 0; margin: auto">
-        <h2>
+      <div>
+        <h2 style="top: 0; left:50px; padding: 2em;">
 	  		{{ this.odai[index] }}
           <input type="text" v-model="odaiAns" placeholder="答え" />
           <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
-		</h2>
+		    </h2>
       </div>
     </div>
     <div>
-      <button @click="showName = true">終了</button>
+      <button @click="showName = true" style="position: fixed; bottom: 20px; right: 20px">おすすめのチーム名を見る</button>
       <h2 v-show="showName">
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
