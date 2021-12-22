@@ -6,8 +6,8 @@
       <div v-show="time">
         <h2>
 	  		{{ this.odai[index] }}
-          <input type="text" v-model="odaiAns" placeholder="答え" />
-          <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
+          <!-- <input type="text" v-model="odaiAns" placeholder="答え" /> -->
+          <!-- <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button> -->
 		</h2>
       </div>
     </div>
@@ -63,13 +63,17 @@ export default {
       field: "",
 	  odaiAns: "",
       odai: [
-        "出身が一番北の人は誰ですか？",
-        "来世は何の生き物になりたいですか？",
-        "味噌汁に入ってると嬉しいものはなんですか？",
-        "最近あった7番目に嬉しいことは何ですか？",
-        "「私実は〇〇なんです」",
-        "好きなポケモンはなんですか？",
-        "自分を一つの漢字で表してみましょう"
+        // "出身が一番北の人は誰ですか？",
+        // "来世は何の生き物になりたいですか？",
+        // "味噌汁に入ってると嬉しいものはなんですか？",
+        // "最近あった7番目に嬉しいことは何ですか？",
+        // "「私実は〇〇なんです」",
+        // "好きなポケモンはなんですか？",
+        // "自分を一つの漢字で表してみましょう"
+        "タメ口で話せ!!!",
+        "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
+        "テンションを高くしろ！！！",
+        "いちばん名前の文字数が長い人が武士になる(同率はありやで)"
       ],
       index: -1,
       showName: false,
@@ -118,8 +122,12 @@ export default {
 	   this.shoukai = false;
            this.time = true;
            // 30秒後にお題を非表示にする
-           setTimeout(() => {
-           this.time = false;
+            setTimeout(() => {
+		// お題の場合以下をコメント外して
+               // this.time = false;
+		// 姿勢の場合以下をコメント外して
+		this.answer();
+		
            }, 30000);
 	}.bind(this), 30000);
     console.log(this.time);
@@ -127,7 +135,15 @@ export default {
   },
 
   methods: {
-    submit(field) {
+      submit(field) {
+	  let kizon = false;
+	  this.words.forEach((element) => {
+	      if (element.word == field) {
+		  console.log('すでにあるワードだよ');
+		  kizon = true;
+		  }
+	  });
+	  if (kizon) return;
       const db = firebase.firestore();
       let dbWords = db.collection("test");
       let inputWord = field;
