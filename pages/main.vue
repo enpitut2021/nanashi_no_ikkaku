@@ -127,7 +127,15 @@ export default {
   },
 
   methods: {
-    submit(field) {
+      submit(field) {
+	  let kizon = false;
+	  this.words.forEach((element) => {
+	      if (element.word == field) {
+		  console.log('すでにあるワードだよ');
+		  kizon = true;
+		  }
+	  });
+	  if (kizon) return;
       const db = firebase.firestore();
       let dbWords = db.collection("test");
       let inputWord = field;
