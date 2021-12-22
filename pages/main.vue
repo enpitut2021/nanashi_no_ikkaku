@@ -122,8 +122,12 @@ export default {
 	   this.shoukai = false;
            this.time = true;
            // 30秒後にお題を非表示にする
-           setTimeout(() => {
-           this.time = false;
+            setTimeout(() => {
+		// お題の場合以下をコメント外して
+               // this.time = false;
+		// 姿勢の場合以下をコメント外して
+		this.answer();
+		
            }, 30000);
 	}.bind(this), 30000);
     console.log(this.time);
