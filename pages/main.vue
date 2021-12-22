@@ -1,9 +1,11 @@
 <template>
   <div>
     <div>
+      <div style="position: fixed; bottom: 20px; left: 20px">
       <input type="text" v-model="field" placeholder="ワード" />
       <button @click="submit(field); field=''">追加</button>
-      <div v-show="time">
+      </div>
+      <div v-show="time" style="position: fixed; top: 0; margin: auto">
         <h2>
 	  		{{ this.odai[index] }}
           <input type="text" v-model="odaiAns" placeholder="答え" />
@@ -120,7 +122,7 @@ export default {
            // 30秒後にお題を非表示にする
            setTimeout(() => {
            this.time = false;
-           }, 30000);
+           }, 3000);
 	}.bind(this), 30000);
     console.log(this.time);
     this.words = obj;
