@@ -5,8 +5,8 @@
       <input type="text" v-model="field" placeholder="ワード" />
       <button @click="submit(field); field=''">追加</button>
       </div>
-      <div>
-        <h2 style="top: 0; left:50px; padding: 2em;">
+      <div style="text-align:center;">
+        <h2 v-show="time" style="top: 0; padding: 2em;">
 	  		{{ this.odai[index] }}
           <input type="text" v-model="odaiAns" placeholder="答え" />
           <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
@@ -19,7 +19,9 @@
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
       </h2>
+    <div style="text-align: center;">
 	  <h2 v-show="shoukai">自己紹介をしてみよう</h2>
+    </div>
     </div>
     <div v-for="row in arrangedWords" :key="row.id" style="margin: 20px">
       <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
@@ -122,7 +124,7 @@ export default {
            // 30秒後にお題を非表示にする
            setTimeout(() => {
            this.time = false;
-           }, 3000);
+           }, 30000);
 	}.bind(this), 30000);
     console.log(this.time);
     this.words = obj;
