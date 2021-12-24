@@ -1,26 +1,35 @@
 <template>
-  <div>
+  <div class="origin">
     <div>
+      <div class="input">
+      <p>
       <input type="text" v-model="field" placeholder="ワード" />
       <button @click="submit(field); field=''">追加</button>
-      <div v-show="time">
-        <h2>
-	  		{{ this.odai[index] }}
-          <!-- <input type="text" v-model="odaiAns" placeholder="答え" /> -->
-          <!-- <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button> -->
-		</h2>
+      </p>
+      </div>
+      <div class="align-center">
+        <h2 v-show="time">
+	  		{{ this.odai[0] }}
+          <!-- <input type="text" v-model="odaiAns" placeholder="答え" />
+          <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button> -->
+		    </h2>
+        <h2 v-show="space">&nbsp;&nbsp;</h2>
       </div>
     </div>
-    <div>
-      <button @click="showName = true">終了</button>
-      <h2 v-show="showName">
+    <div class="suggest-name">
+        <p v-show="showName" class="under-button-item">
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
-      </h2>
-	  <h2 v-show="shoukai">自己紹介をしてみよう</h2>
+        </p>
+        <p class="under-button-item">
+        <button v-show="showButton" @click="showName = true; showButton = false;">おすすめのチーム名を見る</button>
+        </p>
     </div>
-    <div v-for="row in arrangedWords" :key="row.id" style="margin: 20px">
-      <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
+    <!-- <div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
+	  <h2 v-show="shoukai">自己紹介をしてみよう</h2>
+    </div> -->
+    <div v-for="row in arrangedWords" :key="row.id" class="word-margin">
+      <div class="word-align">
         <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji">
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
             {{ item.word }}👍
@@ -36,6 +45,43 @@ h2{
   margin:0;
 }
 
+.origin{
+  margin-top: 1rem; 
+  margin-bottom: 1rem;
+}
+
+.input{
+  position: fixed; 
+  bottom: 20px; 
+  left: 20px
+}
+
+.word-margin{
+  margin-bottom: 30px
+}
+
+.word-align{
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 10px
+}
+
+.suggest-name{
+  position: fixed; 
+  bottom: 20px; 
+  right: 20px
+}
+
+.align-center{
+  text-align:center; 
+  padding-top: 20px; 
+  padding-bottom: 20px;
+}
+
+.under-button-item{
+  float: left; padding-right:10px
+}
 .moji{
   background-color: rgba(0,0,0,0.2); 
   border-radius: 30px; 
@@ -69,15 +115,20 @@ export default {
         // "最近あった7番目に嬉しいことは何ですか？",
         // "「私実は〇〇なんです」",
         // "好きなポケモンはなんですか？",
+
         // "自分を一つの漢字で表してみましょう"
-        "タメ口で話せ!!!",
-        "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
-        "テンションを高くしろ！！！",
-        "いちばん名前の文字数が長い人が武士になる(同率はありやで)"
+
+        "タメ口で話そう!!!",
+        // "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
+        // "テンションを高くしろ！！！",
+        // "いちばん名前の文字数が長い人が武士になる(同率はありやで)",
+        // "自分を一つの漢字で表してみましょう",
       ],
       index: -1,
       showName: false,
-      shoukai: true
+      showButton: true,
+      shoukai: true,
+      space: true,
     };
   },
 
@@ -119,17 +170,18 @@ export default {
     );
     this.timerId = setTimeout(
 	function () {
-	   this.shoukai = false;
+	  //  this.shoukai = false;
            this.time = true;
+           this.space = false;
            // 30秒後にお題を非表示にする
-            setTimeout(() => {
-		// お題の場合以下をコメント外して
-               // this.time = false;
-		// 姿勢の場合以下をコメント外して
-		this.answer();
-		
-           }, 30000);
-	}.bind(this), 30000);
+          //  setTimeout(() => {
+          // お題の場合以下をコメント外して
+          //  this.time = false;
+          // 姿勢の場合以下をコメント外して
+          // this.answer();
+          //  }, 30000);
+	}.bind(this), 120000);
+
     console.log(this.time);
     this.words = obj;
   },
