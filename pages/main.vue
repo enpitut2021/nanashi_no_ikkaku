@@ -130,10 +130,14 @@ export default {
       shoukai: true,
       space: true,
 	showUpvote: true,
+	showUpvote: false,
     };
   },
 
-  mounted() {
+    mounted() {
+	// リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
+	this.showUpvote = (this.$route.query.showUpvote === "true");
+	
     const obj = [];
       const db = firebase.firestore();
       db.collection("odai").doc("odai").onSnapshot((snapshot) => {
