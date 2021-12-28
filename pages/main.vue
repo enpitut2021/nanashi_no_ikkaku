@@ -32,7 +32,7 @@
       <div class="word-align">
         <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji">
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
-            {{ item.word }}👍
+            {{ item.word+((showUpvote)? '👍' : '')}}
           </div>
         </button>
       </div>
@@ -129,6 +129,7 @@ export default {
       showButton: true,
       shoukai: true,
       space: true,
+	showUpvote: true,
     };
   },
 
