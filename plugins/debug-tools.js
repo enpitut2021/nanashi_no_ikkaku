@@ -11,3 +11,8 @@ exports.error = (err) => {
     if (!isProduction) console.error(err)
 }
 
+// プロダクションビルドかによったお題表示時間
+
+const odaiWaitTime = (isProduction) ? 30000 : 3000
+
+exports.ODAI_WAIT_TIME = odaiWaitTime
