@@ -99,6 +99,7 @@ h2{
 
 <script>
 import firebase from "@/plugins/firebase";
+import dtools from "@/plugins/debug-tools.js"
 export default {
   data() {
     return {
@@ -136,7 +137,7 @@ export default {
     const obj = [];
       const db = firebase.firestore();
       db.collection("odai").doc("odai").onSnapshot((snapshot) => {
-	  console.log(snapshot.data()["odaiIndex"]);
+	  dtools.log(snapshot.data()["odaiIndex"]);
 	  this.index = snapshot.data()["odaiIndex"];
 	  });
     db.collection("test").onSnapshot(
@@ -146,7 +147,7 @@ export default {
           const data = doc.data();
           data.id = doc.id;
           obj.push(data);
-          // console.log(obj)
+          // dtools.log(obj)
         });
 
         // 表示用にワードを菱形に変形（二次元配列）
@@ -164,7 +165,7 @@ export default {
         //  function() {
         //    this.time = true;
         //  }.bind(this),
-        //  30000
+        //  dtools.ODAI_WAIT_TIME
         // );
       }.bind(this)
     );
@@ -179,10 +180,10 @@ export default {
           //  this.time = false;
           // 姿勢の場合以下をコメント外して
           // this.answer();
-          //  }, 30000);
+          //  }, dtools.ODAI_WAIT_TIME);
 	}.bind(this), 120000);
 
-    console.log(this.time);
+    dtools.log(this.time);
     this.words = obj;
   },
 
@@ -191,7 +192,7 @@ export default {
 	  let kizon = false;
 	  this.words.forEach((element) => {
 	      if (element.word == field) {
-		  console.log('すでにあるワードだよ');
+		  dtools.log('すでにあるワードだよ');
 		  kizon = true;
 		  }
 	  });
@@ -206,7 +207,7 @@ export default {
             good: 0
           })
           .then(ref => {
-            console.log("Add ID: ", ref.id);
+            dtools.log("Add ID: ", ref.id);
           });
       }
     },
@@ -220,7 +221,7 @@ export default {
          function() {
            this.time = true;
          }.bind(this),
-         30000
+         dtools.ODAI_WAIT_TIME
         );
 	    
 	    // firebase上でお題のindexを１増やす
@@ -236,7 +237,7 @@ export default {
     // 	// 30秒後にお題を非表示にする
     // 	setTimeout(() => {
     //       this.time = false;
-    // 	}, 30000);
+    // 	}, dtools.ODAI_WAIT_TIME);
       
     // },
 
@@ -245,14 +246,14 @@ export default {
       let dbWord = db.collection("test").doc(id);
       dbWord.get().then(function(doc) {
         if (doc.exists) {
-          console.log(dbWord);
+          dtools.log(dbWord);
           let newGood = doc.data().good + 1;
           dbWord
             .update({
               good: newGood
             })
             .then(ref => {
-              console.log("Good can't be updated.");
+              dtools.log("Good can't be updated.");
             });
         }
       });
@@ -281,8 +282,8 @@ export default {
           }
         }
       });
-      console.log("words arranged!");
-      console.log(arrangedWords);
+      dtools.log("words arranged!");
+      dtools.log(arrangedWords);
       return arrangedWords;
     }
   }
