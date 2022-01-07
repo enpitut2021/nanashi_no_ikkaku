@@ -8,12 +8,16 @@
       </p>
       </div>
       <div class="align-center">
-        <h2 v-show="time">
-	  		{{ this.odai[0] }}
-          <!-- <input type="text" v-model="odaiAns" placeholder="答え" />
-          <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button> -->
-		    </h2>
-        <h2 v-show="space">&nbsp;&nbsp;</h2>
+        <!-- <h2 v-show="time">
+	  		  {{ this.odai[0] }}
+           <input type="text" v-model="odaiAns" placeholder="答え" />
+          <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
+		    </h2> 
+        <h2 v-show="space">&nbsp;&nbsp;</h2>--> 
+        <p>
+          <input type="text" v-model="wadai" placeholder="話題" />
+          <button @click="submit(wadai); wadai=''">変更</button>
+        </p>
       </div>
     </div>
     <div class="suggest-name">
@@ -187,7 +191,7 @@ export default {
   },
 
   methods: {
-      submit(field) {
+    submit(field) {
 	  let kizon = false;
 	  this.words.forEach((element) => {
 	      if (element.word == field) {
@@ -210,6 +214,10 @@ export default {
           });
       }
     },
+
+  changeOdai(wadai){
+
+  },
 
 	answer(){
 		// お題表示タイマーのリセット
