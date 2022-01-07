@@ -55,7 +55,7 @@
       </p>
     </div>
     <!-- <div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
-	  <h2 v-show="shoukai">自己紹介をしてみよう</h2>
+	<h2 v-show="shoukai">自己紹介をしてみよう</h2>
     </div> -->
     <div v-for="row in arrangedWords" :key="row.id" class="word-margin">
       <div class="word-align">
@@ -66,7 +66,7 @@
           class="moji"
         >
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
-            {{ item.word }}👍
+            {{ item.word+((showUpvote)? '👍' : '')}}
           </div>
         </button>
       </div>
@@ -134,25 +134,24 @@ h2 {
 
 <script>
 import firebase from "@/plugins/firebase";
+import dtools from "@/plugins/debug-tools.js"
 export default {
-  data() {
-    return {
-      words: [],
-      arrangedWords: "hi",
-      time: false,
-      timerId: undefined,
-      field: "",
-      odaiAns: "",
-      odai: [
-        // "出身が一番北の人は誰ですか？",
-        // "来世は何の生き物になりたいですか？",
-        // "味噌汁に入ってると嬉しいものはなんですか？",
-        // "最近あった7番目に嬉しいことは何ですか？",
-        // "「私実は〇〇なんです」",
-        // "好きなポケモンはなんですか？",
-
-        // "自分を一つの漢字で表してみましょう"
-
+	data() {
+		return {
+			words: [],
+			arrangedWords: "hi",
+			time: false,
+			timerId: undefined,
+			field: "",
+			odaiAns: "",
+			odai: [
+				// "出身が一番北の人は誰ですか？",
+				// "来世は何の生き物になりたいですか？",
+				// "味噌汁に入ってると嬉しいものはなんですか？",
+				// "最近あった7番目に嬉しいことは何ですか？",
+				// "「私実は〇〇なんです」",
+				// "好きなポケモンはなんですか？",
+				// "自分を一つの漢字で表してみましょう"
         "タメ口で話そう!!!",
         // "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
         // "テンションを高くしろ！！！",
@@ -165,16 +164,20 @@ export default {
       shoukai: true,
       space: true,
       currentWadai: "",
+	    showUpvote: false,
     };
   },
 
-  mounted() {
+    mounted() {
+	// リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
+	this.showUpvote = (this.$route.query.showUpvote === "true");
+	
     const obj = [];
     const db = firebase.firestore();
     db.collection("odai")
       .doc("odai")
       .onSnapshot((snapshot) => {
-        console.log(snapshot.data()["odaiIndex"]);
+        dtools.log(snapshot.data()["odaiIndex"]);
         this.index = snapshot.data()["odaiIndex"];
       });
     db.collection("wadai")
@@ -189,16 +192,16 @@ export default {
           const data = doc.data();
           data.id = doc.id;
           obj.push(data);
-          // console.log(obj)
+          // dtools.log(obj)
         });
 
-        // 表示用にワードを菱形に変形（二次元配列）
-        this.arrangedWords = this.arrangeWords(obj);
+				// 表示用にワードを菱形に変形（二次元配列）
+				this.arrangedWords = this.arrangeWords(obj);
 
-        // ワードの配列の更新の度にソートする。いいね数が大きいのが先に来るのに注意
-        // アロー関数（arrow function）と三項演算子(ternary operator）を使ってる。
-        obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
-
+				// ワードの配列の更新の度にソートする。いいね数が大きいのが先に来るのに注意
+				// アロー関数（arrow function）と三項演算子(ternary operator）を使ってる。
+				obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
+        
         // お題表示タイマーのリセット
         // this.time = false; //一旦表示を消す
         // clearTimeout(this.timerId);
@@ -207,40 +210,38 @@ export default {
         //  function() {
         //    this.time = true;
         //  }.bind(this),
-        //  30000
+        //  dtools.ODAI_WAIT_TIME
         // );
       }.bind(this)
     );
     this.timerId = setTimeout(
-      function () {
-        //  this.shoukai = false;
-        this.time = true;
-        this.space = false;
-        // 30秒後にお題を非表示にする
-        //  setTimeout(() => {
-        // お題の場合以下をコメント外して
-        //  this.time = false;
-        // 姿勢の場合以下をコメント外して
-        // this.answer();
-        //  }, 30000);
-      }.bind(this),
-      120000
-    );
+	function () {
+	  //  this.shoukai = false;
+           this.time = true;
+           this.space = false;
+           // 30秒後にお題を非表示にする
+          //  setTimeout(() => {
+          // お題の場合以下をコメント外して
+          //  this.time = false;
+          // 姿勢の場合以下をコメント外して
+          // this.answer();
+          //  }, dtools.ODAI_WAIT_TIME);
+	}.bind(this), 120000);
 
-    console.log(this.time);
+    dtools.log(this.time);
     this.words = obj;
   },
 
   methods: {
-    submit(field) {
-      let kizon = false;
-      this.words.forEach((element) => {
-        if (element.word == field) {
-          console.log("すでにあるワードだよ");
-          kizon = true;
-        }
-      });
-      if (kizon) return;
+      submit(field) {
+	  let kizon = false;
+	  this.words.forEach((element) => {
+	      if (element.word == field) {
+		  dtools.log('すでにあるワードだよ');
+		  kizon = true;
+		  }
+	  });
+	  if (kizon) return;
       const db = firebase.firestore();
       let dbWords = db.collection("test");
       let inputWord = field;
@@ -250,8 +251,8 @@ export default {
             word: inputWord,
             good: 0,
           })
-          .then((ref) => {
-            console.log("Add ID: ", ref.id);
+          .then(ref => {
+            dtools.log("Add ID: ", ref.id);
           });
       }
     },
@@ -266,7 +267,7 @@ export default {
             wadai: inputWadai,
           })
           .then((ref) => {
-            console.log("Add ID: ", ref.id);
+            dtools.log("Add ID: ", ref.id);
           });
       }
     },
@@ -280,7 +281,7 @@ export default {
         function () {
           this.time = true;
         }.bind(this),
-        30000
+         dtools.ODAI_WAIT_TIME
       );
 
       // firebase上でお題のindexを１増やす
@@ -297,23 +298,22 @@ export default {
     // 	// 30秒後にお題を非表示にする
     // 	setTimeout(() => {
     //       this.time = false;
-    // 	}, 30000);
-
-    // },
+    // 	}, dtools.ODAI_WAIT_TIME);      
+		// },
 
     good(id) {
       const db = firebase.firestore();
       let dbWord = db.collection("test").doc(id);
       dbWord.get().then(function (doc) {
         if (doc.exists) {
-          console.log(dbWord);
+          dtools.log(dbWord);
           let newGood = doc.data().good + 1;
           dbWord
             .update({
               good: newGood,
             })
-            .then((ref) => {
-              console.log("Good can't be updated.");
+            .then(ref => {
+              dtools.log("Good can't be updated.");
             });
         }
       });
@@ -342,8 +342,8 @@ export default {
           }
         }
       });
-      console.log("words arranged!");
-      console.log(arrangedWords);
+      dtools.log("words arranged!");
+      dtools.log(arrangedWords);
       return arrangedWords;
     },
   },
