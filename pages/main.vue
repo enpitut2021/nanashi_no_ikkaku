@@ -16,10 +16,10 @@
       </div>
       <div class="align-center">
         <!-- <h2 v-show="time">
-	  		  {{ this.odai[0] }}
+          {{ this.odai[0] }}
            <input type="text" v-model="odaiAns" placeholder="答え" />
           <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
-		    </h2> 
+          </h2> 
         <h2 v-show="space">&nbsp;&nbsp;</h2>-->
         <h2>
           {{ this.currentWadai }}
@@ -152,48 +152,48 @@ export default {
 				// "「私実は〇〇なんです」",
 				// "好きなポケモンはなんですか？",
 				// "自分を一つの漢字で表してみましょう"
-        "タメ口で話そう!!!",
-        // "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
-        // "テンションを高くしろ！！！",
-        // "いちばん名前の文字数が長い人が武士になる(同率はありやで)",
-        // "自分を一つの漢字で表してみましょう",
-      ],
-      index: -1,
-      showName: false,
-      showButton: true,
-      shoukai: true,
-      space: true,
-      currentWadai: "",
-	    showUpvote: false,
-    };
-  },
+				"タメ口で話そう!!!",
+				// "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
+				// "テンションを高くしろ！！！",
+				// "いちばん名前の文字数が長い人が武士になる(同率はありやで)",
+				// "自分を一つの漢字で表してみましょう",
+			],
+			index: -1,
+			showName: false,
+			showButton: true,
+			shoukai: true,
+			space: true,
+			currentWadai: "",
+			showUpvote: false,
+		};
+	},
 
-    mounted() {
+	mounted() {
 	// リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
-	this.showUpvote = (this.$route.query.showUpvote === "true");
+		this.showUpvote = (this.$route.query.showUpvote === "true");
 	
-    const obj = [];
-    const db = firebase.firestore();
-    db.collection("odai")
-      .doc("odai")
-      .onSnapshot((snapshot) => {
-        dtools.log(snapshot.data()["odaiIndex"]);
-        this.index = snapshot.data()["odaiIndex"];
-      });
-    db.collection("wadai")
-      .doc("userWadai")
-      .onSnapshot((snapshot) => {
-        this.currentWadai = snapshot.data()["wadai"];
-      });
-    db.collection("test").onSnapshot(
-      function (snapshot) {
-        obj.splice(0);
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          data.id = doc.id;
-          obj.push(data);
-          // dtools.log(obj)
-        });
+		const obj = [];
+		const db = firebase.firestore();
+		db.collection("odai")
+			.doc("odai")
+			.onSnapshot((snapshot) => {
+				dtools.log(snapshot.data()["odaiIndex"]);
+				this.index = snapshot.data()["odaiIndex"];
+			});
+		db.collection("wadai")
+			.doc("userWadai")
+			.onSnapshot((snapshot) => {
+				this.currentWadai = snapshot.data()["wadai"];
+			});
+		db.collection("test").onSnapshot(
+			function (snapshot) {
+				obj.splice(0);
+				snapshot.forEach((doc) => {
+					const data = doc.data();
+					data.id = doc.id;
+					obj.push(data);
+					// dtools.log(obj)
+				});
 
 				// 表示用にワードを菱形に変形（二次元配列）
 				this.arrangedWords = this.arrangeWords(obj);
@@ -202,150 +202,150 @@ export default {
 				// アロー関数（arrow function）と三項演算子(ternary operator）を使ってる。
 				obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
         
-        // お題表示タイマーのリセット
-        // this.time = false; //一旦表示を消す
-        // clearTimeout(this.timerId);
-        //　新しくタイマーの設定
-        // this.timerId = setTimeout(
-        //  function() {
-        //    this.time = true;
-        //  }.bind(this),
-        //  dtools.ODAI_WAIT_TIME
-        // );
-      }.bind(this)
-    );
-    this.timerId = setTimeout(
-	function () {
-	  //  this.shoukai = false;
-           this.time = true;
-           this.space = false;
-           // 30秒後にお題を非表示にする
-          //  setTimeout(() => {
-          // お題の場合以下をコメント外して
-          //  this.time = false;
-          // 姿勢の場合以下をコメント外して
-          // this.answer();
-          //  }, dtools.ODAI_WAIT_TIME);
-	}.bind(this), 120000);
+				// お題表示タイマーのリセット
+				// this.time = false; //一旦表示を消す
+				// clearTimeout(this.timerId);
+				// 新しくタイマーの設定
+				// this.timerId = setTimeout(
+				//  function() {
+				//    this.time = true;
+				//  }.bind(this),
+				//  dtools.ODAI_WAIT_TIME
+				// );
+			}.bind(this)
+		);
+		this.timerId = setTimeout(
+			function () {
+				//  this.shoukai = false;
+				this.time = true;
+				this.space = false;
+				// 30秒後にお題を非表示にする
+				//  setTimeout(() => {
+				// お題の場合以下をコメント外して
+				//  this.time = false;
+				// 姿勢の場合以下をコメント外して
+				// this.answer();
+				//  }, dtools.ODAI_WAIT_TIME);
+			}.bind(this), 120000);
 
-    dtools.log(this.time);
-    this.words = obj;
-  },
+		dtools.log(this.time);
+		this.words = obj;
+	},
 
-  methods: {
-      submit(field) {
-	  let kizon = false;
-	  this.words.forEach((element) => {
-	      if (element.word == field) {
-		  dtools.log('すでにあるワードだよ');
-		  kizon = true;
-		  }
-	  });
-	  if (kizon) return;
-      const db = firebase.firestore();
-      let dbWords = db.collection("test");
-      let inputWord = field;
-      if (inputWord != "") {
-        dbWords
-          .add({
-            word: inputWord,
-            good: 0,
-          })
-          .then(ref => {
-            dtools.log("Add ID: ", ref.id);
-          });
-      }
-    },
+	methods: {
+		submit(field) {
+			let kizon = false;
+			this.words.forEach((element) => {
+				if (element.word == field) {
+					dtools.log('すでにあるワードだよ');
+					kizon = true;
+				}
+			});
+			if (kizon) return;
+			const db = firebase.firestore();
+			let dbWords = db.collection("test");
+			let inputWord = field;
+			if (inputWord != "") {
+				dbWords
+					.add({
+						word: inputWord,
+						good: 0,
+					})
+					.then(ref => {
+						dtools.log("Add ID: ", ref.id);
+					});
+			}
+		},
 
-    changeWadai(wadai) {
-      const db = firebase.firestore();
-      let dbWadai = db.collection("wadai").doc("userWadai");
-      let inputWadai = wadai;
-      if (inputWadai != "") {
-        dbWadai
-          .update({
-            wadai: inputWadai,
-          })
-          .then((ref) => {
-            dtools.log("Add ID: ", ref.id);
-          });
-      }
-    },
+		changeWadai(wadai) {
+			const db = firebase.firestore();
+			let dbWadai = db.collection("wadai").doc("userWadai");
+			let inputWadai = wadai;
+			if (inputWadai != "") {
+				dbWadai
+					.update({
+						wadai: inputWadai,
+					})
+					.then((ref) => {
+						dtools.log("Add ID: ", ref.id);
+					});
+			}
+		},
 
-    answer() {
-      // お題表示タイマーのリセット
-      this.time = false; //一旦表示を消す
-      clearTimeout(this.timerId);
-      //　新しくタイマーの設定
-      this.timerId = setTimeout(
-        function () {
-          this.time = true;
-        }.bind(this),
-         dtools.ODAI_WAIT_TIME
-      );
+		answer() {
+			// お題表示タイマーのリセット
+			this.time = false; //一旦表示を消す
+			clearTimeout(this.timerId);
+			// 新しくタイマーの設定
+			this.timerId = setTimeout(
+				function () {
+					this.time = true;
+				}.bind(this),
+				dtools.ODAI_WAIT_TIME
+			);
 
-      // firebase上でお題のindexを１増やす
-      const db = firebase.firestore();
-      db.collection("odai")
-        .doc("odai")
-        .set({
-          odaiIndex: this.index + 1,
-        });
-    },
+			// firebase上でお題のindexを１増やす
+			const db = firebase.firestore();
+			db.collection("odai")
+				.doc("odai")
+				.set({
+					odaiIndex: this.index + 1,
+				});
+		},
 
-    // showOdai() {
-    //     this.time = true;
-    // 	// 30秒後にお題を非表示にする
-    // 	setTimeout(() => {
-    //       this.time = false;
-    // 	}, dtools.ODAI_WAIT_TIME);      
+		// showOdai() {
+		//     this.time = true;
+		// 	// 30秒後にお題を非表示にする
+		// 	setTimeout(() => {
+		//       this.time = false;
+		// 	}, dtools.ODAI_WAIT_TIME);      
 		// },
 
-    good(id) {
-      const db = firebase.firestore();
-      let dbWord = db.collection("test").doc(id);
-      dbWord.get().then(function (doc) {
-        if (doc.exists) {
-          dtools.log(dbWord);
-          let newGood = doc.data().good + 1;
-          dbWord
-            .update({
-              good: newGood,
-            })
-            .then(ref => {
-              dtools.log("Good can't be updated.");
-            });
-        }
-      });
-    },
+		good(id) {
+			const db = firebase.firestore();
+			let dbWord = db.collection("test").doc(id);
+			dbWord.get().then(function (doc) {
+				if (doc.exists) {
+					dtools.log(dbWord);
+					let newGood = doc.data().good + 1;
+					dbWord
+						.update({
+							good: newGood,
+						})
+						.then(() => {
+							dtools.log("Good can't be updated.");
+						});
+				}
+			});
+		},
 
-    arrangeWords(words) {
-      // 並び替えられたワードの配列。
-      // index=0からから一行ずつそれぞれ表示（手動改行してる）
-      let arrangedWords = [[]];
-      // 次にワードを追加する行が何行目か
-      let nextAddRow = 0;
-      // 菱形の半径
-      let shapeSize = 1;
-      words.forEach((el, i) => {
-        if (i % 2 == 0) arrangedWords[nextAddRow].unshift(el);
-        // i行目の左端に追加
-        else {
-          arrangedWords[nextAddRow++].push(el); // i行目の右端に追加
-          //　i番目のワードがshapeSizeが変わる前最後のワードであれば
-          if (i + 1 == 2 * (shapeSize * shapeSize)) {
-            nextAddRow = 0;
-            shapeSize++;
-            // 新しく菱形の上と下に行を追加
-            arrangedWords.unshift([]);
-            arrangedWords.push([]);
-          }
-        }
-      });
-      dtools.log("words arranged!");
-      dtools.log(arrangedWords);
-      return arrangedWords;
-    },
-  },
+		arrangeWords(words) {
+			// 並び替えられたワードの配列。
+			// index=0からから一行ずつそれぞれ表示（手動改行してる）
+			let arrangedWords = [[]];
+			// 次にワードを追加する行が何行目か
+			let nextAddRow = 0;
+			// 菱形の半径
+			let shapeSize = 1;
+			words.forEach((el, i) => {
+				if (i % 2 == 0) arrangedWords[nextAddRow].unshift(el);
+				// i行目の左端に追加
+				else {
+					arrangedWords[nextAddRow++].push(el); // i行目の右端に追加
+					// i番目のワードがshapeSizeが変わる前最後のワードであれば
+					if (i + 1 == 2 * (shapeSize * shapeSize)) {
+						nextAddRow = 0;
+						shapeSize++;
+						// 新しく菱形の上と下に行を追加
+						arrangedWords.unshift([]);
+						arrangedWords.push([]);
+					}
+				}
+			});
+			dtools.log("words arranged!");
+			dtools.log(arrangedWords);
+			return arrangedWords;
+		},
+	},
 };
 </script>
