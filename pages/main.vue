@@ -21,6 +21,9 @@
           <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
 		    </h2> 
         <h2 v-show="space">&nbsp;&nbsp;</h2>-->
+        <h2>
+          {{ this.currentWadai }}
+        </h2>
         <p>
           <input type="text" v-model="wadai" placeholder="話題" />
           <button
@@ -161,7 +164,7 @@ export default {
       showButton: true,
       shoukai: true,
       space: true,
-      wadai: "",
+      currentWadai: "",
     };
   },
 
@@ -177,7 +180,7 @@ export default {
     db.collection("wadai")
       .doc("userWadai")
       .onSnapshot((snapshot) => {
-        this.wadai = snapshot.data()["wadai"];
+        this.currentWadai = snapshot.data()["wadai"];
       });
     db.collection("test").onSnapshot(
       function (snapshot) {
