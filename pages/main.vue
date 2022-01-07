@@ -32,7 +32,7 @@
       <div class="word-align">
         <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji">
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
-            {{ item.word }}👍
+            {{ item.word+((showUpvote)? '👍' : '')}}
           </div>
         </button>
       </div>
@@ -115,39 +115,41 @@ export default {
 				// "最近あった7番目に嬉しいことは何ですか？",
 				// "「私実は〇〇なんです」",
 				// "好きなポケモンはなんですか？",
-
 				// "自分を一つの漢字で表してみましょう"
+        "タメ口で話そう!!!",
+        // "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
+        // "テンションを高くしろ！！！",
+        // "いちばん名前の文字数が長い人が武士になる(同率はありやで)",
+        // "自分を一つの漢字で表してみましょう",
+      ],
+      index: -1,
+      showName: false,
+      showButton: true,
+      shoukai: true,
+      space: true,
+	    showUpvote: false,
+    };
+  },
 
-				"タメ口で話そう!!!",
-				// "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
-				// "テンションを高くしろ！！！",
-				// "いちばん名前の文字数が長い人が武士になる(同率はありやで)",
-				// "自分を一つの漢字で表してみましょう",
-			],
-			index: -1,
-			showName: false,
-			showButton: true,
-			shoukai: true,
-			space: true,
-		};
-	},
-
-	mounted() {
-		const obj = [];
-		const db = firebase.firestore();
-		db.collection("odai").doc("odai").onSnapshot((snapshot) => {
-			console.log(snapshot.data()["odaiIndex"]);
-			this.index = snapshot.data()["odaiIndex"];
-		});
-		db.collection("test").onSnapshot(
-			function(snapshot) {
-				obj.splice(0);
-				snapshot.forEach(doc => {
-					const data = doc.data();
-					data.id = doc.id;
-					obj.push(data);
-					// console.log(obj)
-				});
+    mounted() {
+	// リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
+	this.showUpvote = (this.$route.query.showUpvote === "true");
+	
+    const obj = [];
+      const db = firebase.firestore();
+      db.collection("odai").doc("odai").onSnapshot((snapshot) => {
+	  console.log(snapshot.data()["odaiIndex"]);
+	  this.index = snapshot.data()["odaiIndex"];
+	  });
+    db.collection("test").onSnapshot(
+      function(snapshot) {
+        obj.splice(0);
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          data.id = doc.id;
+          obj.push(data);
+          // console.log(obj)
+        });
 
 				// 表示用にワードを菱形に変形（二次元配列）
 				this.arrangedWords = this.arrangeWords(obj);
