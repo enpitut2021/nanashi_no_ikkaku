@@ -13,30 +13,30 @@
 <script>
 import firebase from "@/plugins/firebase";
 export default {
-  data() {
-    return {
-      inputs: [],
-    };
-  },
-  methods: {
-    submit() {
-      const db = firebase.firestore();
-      let dbWords = db.collection("test");
-      this.inputs.forEach(word => {
-        let inputWord = word;
-        if (inputWord != "") {
-          dbWords
-            .add({
-              word: inputWord,
-              good: 0,
-            })
-            .then((ref) => {
-              console.log("Add ID: ", ref.id);
-            });
-        }
-      });
-    },
-  },
+	data() {
+		return {
+			inputs: [],
+		};
+	},
+	methods: {
+		submit() {
+			const db = firebase.firestore();
+			let dbWords = db.collection("test");
+			this.inputs.forEach(word => {
+				let inputWord = word;
+				if (inputWord != "") {
+					dbWords
+						.add({
+							word: inputWord,
+							good: 0,
+						})
+						.then((ref) => {
+							console.log("Add ID: ", ref.id);
+						});
+				}
+			});
+		},
+	},
 };
 </script>
 
