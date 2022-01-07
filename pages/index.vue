@@ -11,7 +11,8 @@
   </div>
 </template>
 <script>
-import firebase from "@/plugins/firebase";
+import firebase from "@/plugins/firebase"
+import dtools from "@/plugins/debug-tools.js"
 export default {
   data() {
     return {
@@ -31,7 +32,7 @@ export default {
               good: 0,
             })
             .then((ref) => {
-              console.log("Add ID: ", ref.id);
+              dtools.log("Add ID: ", ref.id);
             });
         }
       });
