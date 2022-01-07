@@ -2,35 +2,69 @@
   <div class="origin">
     <div>
       <div class="input">
-     <p>
-      <input type="text" v-model="field" placeholder="ワード" />
-      <button @click="submit(field); field=''">追加</button>
-      </p>
+        <p>
+          <input type="text" v-model="field" placeholder="ワード" />
+          <button
+            @click="
+              submit(field);
+              field = '';
+            "
+          >
+            追加
+          </button>
+        </p>
       </div>
       <div class="align-center">
-          <h2 v-show="time">
-          {{ this.odai[0] }}
-            <!-- <input type="text" v-model="odaiAns" placeholder="答え" />
-            <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button> -->
-          </h2>
-          <h2 v-show="space">&nbsp;&nbsp;</h2>
-        </div>
+        <!-- <h2 v-show="time">
+	  		  {{ this.odai[0] }}
+           <input type="text" v-model="odaiAns" placeholder="答え" />
+          <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
+		    </h2> 
+        <h2 v-show="space">&nbsp;&nbsp;</h2>-->
+        <h2>
+          {{ this.currentWadai }}
+        </h2>
+        <p>
+          <input type="text" v-model="wadai" placeholder="話題" />
+          <button
+            @click="
+              changeWadai(wadai);
+              wadai = '';
+            "
+          >
+            変更
+          </button>
+        </p>
+      </div>
     </div>
     <div class="suggest-name">
-        <p v-show='showName' class="under-button-item">
+      <p v-show="showName" class="under-button-item">
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
-        </p>
-        <p class="under-button-item">
-        <button v-show="showButton" @click="showName = true; showButton = false;">おすすめのチーム名を見る</button>
-        </p>
+      </p>
+      <p class="under-button-item">
+        <button
+          v-show="showButton"
+          @click="
+            showName = true;
+            showButton = false;
+          "
+        >
+          おすすめのチーム名を見る
+        </button>
+      </p>
     </div>
     <!-- <div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
 	<h2 v-show="shoukai">自己紹介をしてみよう</h2>
     </div> -->
     <div v-for="row in arrangedWords" :key="row.id" class="word-margin">
       <div class="word-align">
-        <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji">
+        <button
+          @click="good(item.id)"
+          v-for="item in row"
+          :key="item.id"
+          class="moji"
+        >
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
             {{ item.word+((showUpvote)? '👍' : '')}}
           </div>
@@ -41,58 +75,59 @@
 </template>
 
 <style lang="css" scoped>
-h2{
-  margin:0;
+h2 {
+  margin: 0;
 }
 
-.origin{
-  margin-top: 1rem; 
+.origin {
+  margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
-.input{
-  position: fixed; 
-  bottom: 20px; 
-  left: 20px
+.input {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
 }
 
-.word-margin{
-  margin-bottom: 30px
+.word-margin {
+  margin-bottom: 30px;
 }
 
-.word-align{
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  gap: 10px
+.word-align {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
-.suggest-name{
-  position: fixed; 
-  bottom: 20px; 
-  right: 20px
+.suggest-name {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
 }
 
-.align-center{
-  text-align:center; 
-  padding-top: 20px; 
+.align-center {
+  text-align: center;
+  padding-top: 20px;
   padding-bottom: 20px;
 }
 
-.under-button-item{
-  float: left; padding-right:10px
+.under-button-item {
+  float: left;
+  padding-right: 10px;
 }
-.moji{
-  background-color: rgba(0,0,0,0.2); 
-  border-radius: 30px; 
-  border: 0; 
-  box-shadow: 5px 5px 5px gray; 
-  transition: .3s;
-} 
+.moji {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 30px;
+  border: 0;
+  box-shadow: 5px 5px 5px gray;
+  transition: 0.3s;
+}
 
-.moji:hover{
-  position:relative;
-	transform: translate3d(0, 5px, 0);
+.moji:hover {
+  position: relative;
+  transform: translate3d(0, 5px, 0);
 }
 </style>
 
@@ -128,6 +163,7 @@ export default {
       showButton: true,
       shoukai: true,
       space: true,
+      currentWadai: "",
 	    showUpvote: false,
     };
   },
@@ -137,15 +173,22 @@ export default {
 	this.showUpvote = (this.$route.query.showUpvote === "true");
 	
     const obj = [];
-      const db = firebase.firestore();
-      db.collection("odai").doc("odai").onSnapshot((snapshot) => {
-	  dtools.log(snapshot.data()["odaiIndex"]);
-	  this.index = snapshot.data()["odaiIndex"];
-	  });
+    const db = firebase.firestore();
+    db.collection("odai")
+      .doc("odai")
+      .onSnapshot((snapshot) => {
+        dtools.log(snapshot.data()["odaiIndex"]);
+        this.index = snapshot.data()["odaiIndex"];
+      });
+    db.collection("wadai")
+      .doc("userWadai")
+      .onSnapshot((snapshot) => {
+        this.currentWadai = snapshot.data()["wadai"];
+      });
     db.collection("test").onSnapshot(
-      function(snapshot) {
+      function (snapshot) {
         obj.splice(0);
-        snapshot.forEach(doc => {
+        snapshot.forEach((doc) => {
           const data = doc.data();
           data.id = doc.id;
           obj.push(data);
@@ -206,7 +249,7 @@ export default {
         dbWords
           .add({
             word: inputWord,
-            good: 0
+            good: 0,
           })
           .then(ref => {
             dtools.log("Add ID: ", ref.id);
@@ -214,26 +257,42 @@ export default {
       }
     },
 
-	answer(){
-		// お題表示タイマーのリセット
-        this.time = false; //一旦表示を消す
-        clearTimeout(this.timerId);
-        //　新しくタイマーの設定
-        this.timerId = setTimeout(
-         function() {
-           this.time = true;
-         }.bind(this),
-         dtools.ODAI_WAIT_TIME
-        );
-	    
-	    // firebase上でお題のindexを１増やす
+    changeWadai(wadai) {
       const db = firebase.firestore();
-	db.collection("odai").doc("odai").set({
-	    odaiIndex: this.index + 1
-	    });
-	},
+      let dbWadai = db.collection("wadai").doc("userWadai");
+      let inputWadai = wadai;
+      if (inputWadai != "") {
+        dbWadai
+          .update({
+            wadai: inputWadai,
+          })
+          .then((ref) => {
+            dtools.log("Add ID: ", ref.id);
+          });
+      }
+    },
 
-      
+    answer() {
+      // お題表示タイマーのリセット
+      this.time = false; //一旦表示を消す
+      clearTimeout(this.timerId);
+      //　新しくタイマーの設定
+      this.timerId = setTimeout(
+        function () {
+          this.time = true;
+        }.bind(this),
+         dtools.ODAI_WAIT_TIME
+      );
+
+      // firebase上でお題のindexを１増やす
+      const db = firebase.firestore();
+      db.collection("odai")
+        .doc("odai")
+        .set({
+          odaiIndex: this.index + 1,
+        });
+    },
+
     // showOdai() {
     //     this.time = true;
     // 	// 30秒後にお題を非表示にする
@@ -245,13 +304,13 @@ export default {
     good(id) {
       const db = firebase.firestore();
       let dbWord = db.collection("test").doc(id);
-      dbWord.get().then(function(doc) {
+      dbWord.get().then(function (doc) {
         if (doc.exists) {
           dtools.log(dbWord);
           let newGood = doc.data().good + 1;
           dbWord
             .update({
-              good: newGood
+              good: newGood,
             })
             .then(ref => {
               dtools.log("Good can't be updated.");
@@ -286,7 +345,7 @@ export default {
       dtools.log("words arranged!");
       dtools.log(arrangedWords);
       return arrangedWords;
-    }
-  }
+    },
+  },
 };
 </script>
