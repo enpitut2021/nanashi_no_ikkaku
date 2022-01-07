@@ -2,22 +2,22 @@
   <div class="origin">
     <div>
       <div class="input">
-      <p>
+     <p>
       <input type="text" v-model="field" placeholder="ワード" />
       <button @click="submit(field); field=''">追加</button>
       </p>
       </div>
       <div class="align-center">
-        <h2 v-show="time">
-	  		{{ this.odai[0] }}
-          <!-- <input type="text" v-model="odaiAns" placeholder="答え" />
-          <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button> -->
-		    </h2>
-        <h2 v-show="space">&nbsp;&nbsp;</h2>
-      </div>
+          <h2 v-show="time">
+          {{ this.odai[0] }}
+            <!-- <input type="text" v-model="odaiAns" placeholder="答え" />
+            <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button> -->
+          </h2>
+          <h2 v-show="space">&nbsp;&nbsp;</h2>
+        </div>
     </div>
     <div class="suggest-name">
-        <p v-show="showName" class="under-button-item">
+        <p v-show='showName' class="under-button-item">
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
         </p>
@@ -26,13 +26,13 @@
         </p>
     </div>
     <!-- <div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
-	  <h2 v-show="shoukai">自己紹介をしてみよう</h2>
+	<h2 v-show="shoukai">自己紹介をしてみよう</h2>
     </div> -->
     <div v-for="row in arrangedWords" :key="row.id" class="word-margin">
       <div class="word-align">
         <button @click="good(item.id)" v-for="item in row" :key="item.id" class="moji">
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
-            {{ item.word }}👍
+            {{ item.word+((showUpvote)? '👍' : '')}}
           </div>
         </button>
       </div>
@@ -101,24 +101,22 @@ h2{
 import firebase from "@/plugins/firebase";
 import dtools from "@/plugins/debug-tools.js"
 export default {
-  data() {
-    return {
-      words: [],
-      arrangedWords: "hi",
-      time: false,
-      timerId: undefined,
-      field: "",
-	  odaiAns: "",
-      odai: [
-        // "出身が一番北の人は誰ですか？",
-        // "来世は何の生き物になりたいですか？",
-        // "味噌汁に入ってると嬉しいものはなんですか？",
-        // "最近あった7番目に嬉しいことは何ですか？",
-        // "「私実は〇〇なんです」",
-        // "好きなポケモンはなんですか？",
-
-        // "自分を一つの漢字で表してみましょう"
-
+	data() {
+		return {
+			words: [],
+			arrangedWords: "hi",
+			time: false,
+			timerId: undefined,
+			field: "",
+			odaiAns: "",
+			odai: [
+				// "出身が一番北の人は誰ですか？",
+				// "来世は何の生き物になりたいですか？",
+				// "味噌汁に入ってると嬉しいものはなんですか？",
+				// "最近あった7番目に嬉しいことは何ですか？",
+				// "「私実は〇〇なんです」",
+				// "好きなポケモンはなんですか？",
+				// "自分を一つの漢字で表してみましょう"
         "タメ口で話そう!!!",
         // "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
         // "テンションを高くしろ！！！",
@@ -130,10 +128,14 @@ export default {
       showButton: true,
       shoukai: true,
       space: true,
+	    showUpvote: false,
     };
   },
 
-  mounted() {
+    mounted() {
+	// リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
+	this.showUpvote = (this.$route.query.showUpvote === "true");
+	
     const obj = [];
       const db = firebase.firestore();
       db.collection("odai").doc("odai").onSnapshot((snapshot) => {
@@ -150,13 +152,13 @@ export default {
           // dtools.log(obj)
         });
 
-        // 表示用にワードを菱形に変形（二次元配列）
-        this.arrangedWords = this.arrangeWords(obj);
+				// 表示用にワードを菱形に変形（二次元配列）
+				this.arrangedWords = this.arrangeWords(obj);
 
-        // ワードの配列の更新の度にソートする。いいね数が大きいのが先に来るのに注意
-        // アロー関数（arrow function）と三項演算子(ternary operator）を使ってる。
-        obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
-
+				// ワードの配列の更新の度にソートする。いいね数が大きいのが先に来るのに注意
+				// アロー関数（arrow function）と三項演算子(ternary operator）を使ってる。
+				obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
+        
         // お題表示タイマーのリセット
         // this.time = false; //一旦表示を消す
         // clearTimeout(this.timerId);
@@ -237,9 +239,8 @@ export default {
     // 	// 30秒後にお題を非表示にする
     // 	setTimeout(() => {
     //       this.time = false;
-    // 	}, dtools.ODAI_WAIT_TIME);
-      
-    // },
+    // 	}, dtools.ODAI_WAIT_TIME);      
+		// },
 
     good(id) {
       const db = firebase.firestore();
