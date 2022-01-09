@@ -66,10 +66,14 @@
           class="moji"
         >
           <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
-            {{ item.word+((showUpvote)? '👍' : '')}}
+            {{ item.word + (showUpvote ? "👍" : "") }}
           </div>
         </button>
       </div>
+    </div>
+	<div>
+	<p>いま話してるメンバー</p>
+      <p v-for="member in members" :key="member.id">{{ member.member }}</p>
     </div>
   </div>
 </template>
@@ -131,221 +135,232 @@ h2 {
 }
 </style>
 
-
 <script>
 import firebase from "@/plugins/firebase";
-import dtools from "@/plugins/debug-tools.js"
+import dtools from "@/plugins/debug-tools.js";
 export default {
-	data() {
-		return {
-			words: [],
-			arrangedWords: "hi",
-			time: false,
-			timerId: undefined,
-			field: "",
-			odaiAns: "",
-			odai: [
-				// "出身が一番北の人は誰ですか？",
-				// "来世は何の生き物になりたいですか？",
-				// "味噌汁に入ってると嬉しいものはなんですか？",
-				// "最近あった7番目に嬉しいことは何ですか？",
-				// "「私実は〇〇なんです」",
-				// "好きなポケモンはなんですか？",
-				// "自分を一つの漢字で表してみましょう"
-				"タメ口で話そう!!!",
-				// "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
-				// "テンションを高くしろ！！！",
-				// "いちばん名前の文字数が長い人が武士になる(同率はありやで)",
-				// "自分を一つの漢字で表してみましょう",
-			],
-			index: -1,
-			showName: false,
-			showButton: true,
-			shoukai: true,
-			space: true,
-			currentWadai: "",
-			showUpvote: false,
-		};
-	},
+  data() {
+    return {
+      words: [],
+      arrangedWords: "hi",
+      members: [],
+      time: false,
+      timerId: undefined,
+      field: "",
+      odaiAns: "",
+      odai: [
+        // "出身が一番北の人は誰ですか？",
+        // "来世は何の生き物になりたいですか？",
+        // "味噌汁に入ってると嬉しいものはなんですか？",
+        // "最近あった7番目に嬉しいことは何ですか？",
+        // "「私実は〇〇なんです」",
+        // "好きなポケモンはなんですか？",
+        // "自分を一つの漢字で表してみましょう"
+        "タメ口で話そう!!!"
+        // "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
+        // "テンションを高くしろ！！！",
+        // "いちばん名前の文字数が長い人が武士になる(同率はありやで)",
+        // "自分を一つの漢字で表してみましょう",
+      ],
+      index: -1,
+      showName: false,
+      showButton: true,
+      shoukai: true,
+      space: true,
+      currentWadai: "",
+      showUpvote: false
+    };
+  },
 
-	mounted() {
-	// リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
-		this.showUpvote = (this.$route.query.showUpvote === "true");
-	
-		const obj = [];
-		const db = firebase.firestore();
-		db.collection("odai")
-			.doc("odai")
-			.onSnapshot((snapshot) => {
-				dtools.log(snapshot.data()["odaiIndex"]);
-				this.index = snapshot.data()["odaiIndex"];
-			});
-		db.collection("wadai")
-			.doc("userWadai")
-			.onSnapshot((snapshot) => {
-				this.currentWadai = snapshot.data()["wadai"];
-			});
-		db.collection("test").onSnapshot(
-			function (snapshot) {
-				obj.splice(0);
-				snapshot.forEach((doc) => {
-					const data = doc.data();
-					data.id = doc.id;
-					obj.push(data);
-					// dtools.log(obj)
-				});
+  mounted() {
+    // リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
+    this.showUpvote = this.$route.query.showUpvote === "true";
+    const obj = [];
+    const obj2 = [];
+    const db = firebase.firestore();
+    db.collection("odai")
+      .doc("odai")
+      .onSnapshot(snapshot => {
+        dtools.log(snapshot.data()["odaiIndex"]);
+        this.index = snapshot.data()["odaiIndex"];
+      });
+    db.collection("wadai")
+      .doc("userWadai")
+      .onSnapshot(snapshot => {
+        this.currentWadai = snapshot.data()["wadai"];
+      });
+    db.collection("members").onSnapshot(function(snapshot) {
+      obj2.splice(0);
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        data.id = doc.id;
+        obj2.push(data);
+      });
+    });
+    db.collection("test").onSnapshot(
+      function(snapshot) {
+        obj.splice(0);
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          data.id = doc.id;
+          obj.push(data);
+          // dtools.log(obj)
+        });
 
-				// 表示用にワードを菱形に変形（二次元配列）
-				this.arrangedWords = this.arrangeWords(obj);
+        // 表示用にワードを菱形に変形（二次元配列）
+        this.arrangedWords = this.arrangeWords(obj);
 
-				// ワードの配列の更新の度にソートする。いいね数が大きいのが先に来るのに注意
-				// アロー関数（arrow function）と三項演算子(ternary operator）を使ってる。
-				obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
-        
-				// お題表示タイマーのリセット
-				// this.time = false; //一旦表示を消す
-				// clearTimeout(this.timerId);
-				// 新しくタイマーの設定
-				// this.timerId = setTimeout(
-				//  function() {
-				//    this.time = true;
-				//  }.bind(this),
-				//  dtools.ODAI_WAIT_TIME
-				// );
-			}.bind(this)
-		);
-		this.timerId = setTimeout(
-			function () {
-				//  this.shoukai = false;
-				this.time = true;
-				this.space = false;
-				// 30秒後にお題を非表示にする
-				//  setTimeout(() => {
-				// お題の場合以下をコメント外して
-				//  this.time = false;
-				// 姿勢の場合以下をコメント外して
-				// this.answer();
-				//  }, dtools.ODAI_WAIT_TIME);
-			}.bind(this), 120000);
+        // ワードの配列の更新の度にソートする。いいね数が大きいのが先に来るのに注意
+        // アロー関数（arrow function）と三項演算子(ternary operator）を使ってる。
+        obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
 
-		dtools.log(this.time);
-		this.words = obj;
-	},
+        // お題表示タイマーのリセット
+        // this.time = false; //一旦表示を消す
+        // clearTimeout(this.timerId);
+        // 新しくタイマーの設定
+        // this.timerId = setTimeout(
+        //  function() {
+        //    this.time = true;
+        //  }.bind(this),
+        //  dtools.ODAI_WAIT_TIME
+        // );
+      }.bind(this)
+    );
+    this.timerId = setTimeout(
+      function() {
+        //  this.shoukai = false;
+        this.time = true;
+        this.space = false;
+        // 30秒後にお題を非表示にする
+        //  setTimeout(() => {
+        // お題の場合以下をコメント外して
+        //  this.time = false;
+        // 姿勢の場合以下をコメント外して
+        // this.answer();
+        //  }, dtools.ODAI_WAIT_TIME);
+      }.bind(this),
+      120000
+    );
 
-	methods: {
-		submit(field) {
-			let kizon = false;
-			this.words.forEach((element) => {
-				if (element.word == field) {
-					dtools.log('すでにあるワードだよ');
-					kizon = true;
-				}
-			});
-			if (kizon) return;
-			const db = firebase.firestore();
-			let dbWords = db.collection("test");
-			let inputWord = field;
-			if (inputWord != "") {
-				dbWords
-					.add({
-						word: inputWord,
-						good: 0,
-					})
-					.then(ref => {
-						dtools.log("Add ID: ", ref.id);
-					});
-			}
-		},
+    dtools.log(this.time);
+    this.words = obj;
+    this.members = obj2;
+  },
 
-		changeWadai(wadai) {
-			const db = firebase.firestore();
-			let dbWadai = db.collection("wadai").doc("userWadai");
-			let inputWadai = wadai;
-			if (inputWadai != "") {
-				dbWadai
-					.update({
-						wadai: inputWadai,
-					})
-					.then((ref) => {
-						dtools.log("Add ID: ", ref.id);
-					});
-			}
-		},
+  methods: {
+    submit(field) {
+      let kizon = false;
+      this.words.forEach(element => {
+        if (element.word == field) {
+          dtools.log("すでにあるワードだよ");
+          kizon = true;
+        }
+      });
+      if (kizon) return;
+      const db = firebase.firestore();
+      let dbWords = db.collection("test");
+      let inputWord = field;
+      if (inputWord != "") {
+        dbWords
+          .add({
+            word: inputWord,
+            good: 0
+          })
+          .then(ref => {
+            dtools.log("Add ID: ", ref.id);
+          });
+      }
+    },
 
-		answer() {
-			// お題表示タイマーのリセット
-			this.time = false; //一旦表示を消す
-			clearTimeout(this.timerId);
-			// 新しくタイマーの設定
-			this.timerId = setTimeout(
-				function () {
-					this.time = true;
-				}.bind(this),
-				dtools.ODAI_WAIT_TIME
-			);
+    changeWadai(wadai) {
+      const db = firebase.firestore();
+      let dbWadai = db.collection("wadai").doc("userWadai");
+      let inputWadai = wadai;
+      if (inputWadai != "") {
+        dbWadai
+          .update({
+            wadai: inputWadai
+          })
+          .then(ref => {
+            dtools.log("Add ID: ", ref.id);
+          });
+      }
+    },
 
-			// firebase上でお題のindexを１増やす
-			const db = firebase.firestore();
-			db.collection("odai")
-				.doc("odai")
-				.set({
-					odaiIndex: this.index + 1,
-				});
-		},
+    answer() {
+      // お題表示タイマーのリセット
+      this.time = false; //一旦表示を消す
+      clearTimeout(this.timerId);
+      // 新しくタイマーの設定
+      this.timerId = setTimeout(
+        function() {
+          this.time = true;
+        }.bind(this),
+        dtools.ODAI_WAIT_TIME
+      );
 
-		// showOdai() {
-		//     this.time = true;
-		// 	// 30秒後にお題を非表示にする
-		// 	setTimeout(() => {
-		//       this.time = false;
-		// 	}, dtools.ODAI_WAIT_TIME);      
-		// },
+      // firebase上でお題のindexを１増やす
+      const db = firebase.firestore();
+      db.collection("odai")
+        .doc("odai")
+        .set({
+          odaiIndex: this.index + 1
+        });
+    },
 
-		good(id) {
-			const db = firebase.firestore();
-			let dbWord = db.collection("test").doc(id);
-			dbWord.get().then(function (doc) {
-				if (doc.exists) {
-					dtools.log(dbWord);
-					let newGood = doc.data().good + 1;
-					dbWord
-						.update({
-							good: newGood,
-						})
-						.then(() => {
-							dtools.log("Good can't be updated.");
-						});
-				}
-			});
-		},
+    // showOdai() {
+    //     this.time = true;
+    // 	// 30秒後にお題を非表示にする
+    // 	setTimeout(() => {
+    //       this.time = false;
+    // 	}, dtools.ODAI_WAIT_TIME);
+    // },
 
-		arrangeWords(words) {
-			// 並び替えられたワードの配列。
-			// index=0からから一行ずつそれぞれ表示（手動改行してる）
-			let arrangedWords = [[]];
-			// 次にワードを追加する行が何行目か
-			let nextAddRow = 0;
-			// 菱形の半径
-			let shapeSize = 1;
-			words.forEach((el, i) => {
-				if (i % 2 == 0) arrangedWords[nextAddRow].unshift(el);
-				// i行目の左端に追加
-				else {
-					arrangedWords[nextAddRow++].push(el); // i行目の右端に追加
-					// i番目のワードがshapeSizeが変わる前最後のワードであれば
-					if (i + 1 == 2 * (shapeSize * shapeSize)) {
-						nextAddRow = 0;
-						shapeSize++;
-						// 新しく菱形の上と下に行を追加
-						arrangedWords.unshift([]);
-						arrangedWords.push([]);
-					}
-				}
-			});
-			dtools.log("words arranged!");
-			dtools.log(arrangedWords);
-			return arrangedWords;
-		},
-	},
+    good(id) {
+      const db = firebase.firestore();
+      let dbWord = db.collection("test").doc(id);
+      dbWord.get().then(function(doc) {
+        if (doc.exists) {
+          dtools.log(dbWord);
+          let newGood = doc.data().good + 1;
+          dbWord
+            .update({
+              good: newGood
+            })
+            .then(() => {
+              dtools.log("Good can't be updated.");
+            });
+        }
+      });
+    },
+
+    arrangeWords(words) {
+      // 並び替えられたワードの配列。
+      // index=0からから一行ずつそれぞれ表示（手動改行してる）
+      let arrangedWords = [[]];
+      // 次にワードを追加する行が何行目か
+      let nextAddRow = 0;
+      // 菱形の半径
+      let shapeSize = 1;
+      words.forEach((el, i) => {
+        if (i % 2 == 0) arrangedWords[nextAddRow].unshift(el);
+        // i行目の左端に追加
+        else {
+          arrangedWords[nextAddRow++].push(el); // i行目の右端に追加
+          // i番目のワードがshapeSizeが変わる前最後のワードであれば
+          if (i + 1 == 2 * (shapeSize * shapeSize)) {
+            nextAddRow = 0;
+            shapeSize++;
+            // 新しく菱形の上と下に行を追加
+            arrangedWords.unshift([]);
+            arrangedWords.push([]);
+          }
+        }
+      });
+      dtools.log("words arranged!");
+      dtools.log(arrangedWords);
+      return arrangedWords;
+    }
+  }
 };
 </script>
