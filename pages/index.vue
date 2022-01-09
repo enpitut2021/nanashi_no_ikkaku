@@ -10,6 +10,22 @@
     </nuxt-link>
   </div>
 </template>
+<style scoped>
+div {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.text {
+  max-width: 50%;
+  text-align: center;
+  font-size: 30px;
+  margin: 30px;
+}
+</style>
 <script>
 import firebase from "@/plugins/firebase"
 import dtools from "@/plugins/debug-tools.js"
