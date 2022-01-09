@@ -1,8 +1,23 @@
 <template>
-  <div style="width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center">
-    <div style="max-width: 50%; text-align: center; font-size: 30px; margin: 30px">
+  <div>
+    <div class="text">
       <label>最近のマイブームは</label>
-      <input style="font-size: 30px" type="text" v-model="inputs[1]" size="10" placeholder="瞑想" />
+      <input
+        style="font-size: 30px"
+        type="text"
+        v-model="inputs[1]"
+        size="10"
+        placeholder="瞑想"
+      />
+      <label>です！</label>
+      <label>なまえは</label>
+      <input
+        style="font-size: 30px"
+        type="text"
+        v-model="regist[1]"
+        size="10"
+        placeholder="花子"
+      />
       <label>です！</label>
     </div>
     <nuxt-link to="/main">
