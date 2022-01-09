@@ -15,6 +15,7 @@
         "vue"
     ],
     "rules": {
-        "indent": ["error", "tab"]
+        "indent": ["error", "tab"],
+        "vue/multi-word-component-names": []
     }
 }
