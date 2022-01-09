@@ -42,33 +42,45 @@ div {
 }
 </style>
 <script>
-import firebase from "@/plugins/firebase"
-import dtools from "@/plugins/debug-tools.js"
+import firebase from "@/plugins/firebase";
+import dtools from "@/plugins/debug-tools.js";
 export default {
-	data() {
-		return {
-			inputs: [],
-		};
-	},
-	methods: {
-		submit() {
-			const db = firebase.firestore();
-			let dbWords = db.collection("test");
-			this.inputs.forEach(word => {
-				let inputWord = word;
-				if (inputWord != "") {
-					dbWords
-						.add({
-							word: inputWord,
-							good: 0,
-						})
-						.then((ref) => {
-							dtools.log("Add ID: ", ref.id);
-						});
-				}
-			});
-		},
-	},
+  data() {
+    return {
+      inputs: [],
+      regist: []
+    };
+  },
+  methods: {
+    submit() {
+      const db = firebase.firestore();
+      let dbWords = db.collection("test");
+      let dbregist = db.collection("members");
+      this.inputs.forEach(word => {
+        let inputWord = word;
+        if (inputWord != "") {
+          dbWords
+            .add({
+              word: inputWord,
+              good: 0
+            })
+            .then(ref => {
+              dtools.log("Add ID: ", ref.id);
+            });
+        }
+      });
+      this.regist.forEach(member=> {
+        let inputmember = member;
+        if(inputmember  !=  ""){
+          dbregist.add({
+            member: inputmember
+          })
+          .then(ref =>{
+            dtools.log("ADD MEMBER: ", ref.member)
+          })
+        }
+      })
+    }
+  }
 };
 </script>
-
