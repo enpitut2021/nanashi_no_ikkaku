@@ -1,7 +1,7 @@
 <template>
   <div class="origin">
     <div>
-      <div class="input">
+      <div class="bottom-input">
         <p>
           <input type="text" v-model="field" placeholder="ワード" />
           <button
@@ -84,7 +84,7 @@ h2 {
   margin-bottom: 1rem;
 }
 
-.input {
+.bottom-input {
   position: fixed;
   bottom: 20px;
   left: 20px;

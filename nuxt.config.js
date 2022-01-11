@@ -39,6 +39,12 @@ export default {
 
 	// Modules: https://go.nuxtjs.dev/config-modules
 	modules: [
+		// Simple usage
+    'nuxt-buefy',
+
+    // Or you can customize
+    ['nuxt-buefy', { css: false, materialDesignIcons: false }],
+          
 		'@nuxtjs/style-resources'
 	],
 	styleResources: {
