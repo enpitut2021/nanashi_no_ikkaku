@@ -23,8 +23,14 @@
     <nuxt-link to="/main">
       <button @click="submit">こんにちは</button>
     </nuxt-link>
+    <p>トマト色になるはずテスト</p>
   </div>
 </template>
+<style lang="scss">
+p {
+  color: tomato;
+}
+</style>
 <script>
 import firebase from "@/plugins/firebase";
 import dtools from "@/plugins/debug-tools.js";
