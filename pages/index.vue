@@ -1,6 +1,15 @@
 <template>
-  <div>
-    <div class="text">
+  <div
+    style="width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center"
+  >
+    <b-notification aria-close-label="Close notification">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce id
+      fermentum quam. Proin sagittis, nibh id hendrerit imperdiet, elit sapien
+      laoreet elit
+    </b-notification>
+    <div
+      style="max-width: 50%; text-align: center; font-size: 30px; margin: 30px"
+    >
       <label>最近のマイブームは</label>
       <input
         style="font-size: 30px"
@@ -23,6 +32,7 @@
     <nuxt-link to="/main">
       <button @click="submit">こんにちは</button>
     </nuxt-link>
+    <p>トマト色になるはずテスト</p>
   </div>
 </template>
 <style scoped>
