@@ -68,7 +68,7 @@
       </div>
     </div>
 	<div class="bottom-input columns is-centered">
-        <div class="column is-half card">
+        <div class="column is-half card p-5">
           <p>
 			<b-field label="ワード">
             	<b-input v-model="field"></b-input>
@@ -101,11 +101,12 @@ h2 {
   margin-bottom: 1rem;
 }
 
-/* .bottom-input {
+.bottom-input {
   position: fixed;
+  width: 100%;
   bottom: 20px;
   left: 20px;
-} */
+}
 
 .word-margin {
   margin-bottom: 30px;

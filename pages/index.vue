@@ -5,6 +5,7 @@
     <div
       style="max-width: 50%; text-align: center; font-size: 30px; margin: 30px"
     >
+    <div> 
       <label>最近のマイブームは</label>
       <input
         style="font-size: 30px"
@@ -14,18 +15,21 @@
         placeholder="瞑想"
       />
       <label>です！</label>
-      <label>なまえは</label>
-      <input
-        style="font-size: 30px"
-        type="text"
-        v-model="regist[1]"
-        size="10"
-        placeholder="花子"
-      />
-      <label>です！</label>
+    </div>
+      <div>
+        <label>なまえは</label>
+        <input
+          style="font-size: 30px"
+          type="text"
+          v-model="regist[1]"
+          size="10"
+          placeholder="花子"
+        />
+        <label>です！</label>
+      </div>
     </div>
     <nuxt-link to="/main">
-      <button @click="submit">こんにちは</button>
+      <b-button @click="submit">こんにちは</b-button>
     </nuxt-link>
   </div>
 </template>
