@@ -84,6 +84,10 @@
           </p>
         </div>
       </div>
+	<div>
+	<p>いま話してるメンバー</p>
+      <p v-for="member in members" :key="member.id">{{ member.member }}</p>
+    </div>
   </div>
 </template>
 
@@ -147,7 +151,6 @@ h2 {
 	background-color: rose;
 }
 </style>
-
 <script>
 import firebase from "@/plugins/firebase";
 import dtools from "@/plugins/debug-tools.js";
@@ -156,6 +159,7 @@ export default {
     return {
       words: [],
       arrangedWords: "hi",
+      members: [],
       time: false,
       timerId: undefined,
       field: "",
@@ -187,8 +191,8 @@ export default {
   mounted() {
     // リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
     this.showUpvote = this.$route.query.showUpvote === "true";
-
     const obj = [];
+    const obj2 = [];
     const db = firebase.firestore();
     db.collection("odai")
       .doc("odai")
@@ -201,6 +205,14 @@ export default {
       .onSnapshot(snapshot => {
         this.currentWadai = snapshot.data()["wadai"];
       });
+    db.collection("members").onSnapshot(function(snapshot) {
+      obj2.splice(0);
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        data.id = doc.id;
+        obj2.push(data);
+      });
+    });
     db.collection("test").onSnapshot(
       function(snapshot) {
         obj.splice(0);
@@ -248,6 +260,7 @@ export default {
 
     dtools.log(this.time);
     this.words = obj;
+    this.members = obj2;
   },
 
   methods: {

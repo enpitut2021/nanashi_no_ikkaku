@@ -14,6 +14,15 @@
         placeholder="瞑想"
       />
       <label>です！</label>
+      <label>なまえは</label>
+      <input
+        style="font-size: 30px"
+        type="text"
+        v-model="regist[1]"
+        size="10"
+        placeholder="花子"
+      />
+      <label>です！</label>
     </div>
     <nuxt-link to="/main">
       <button @click="submit">こんにちは</button>
@@ -28,13 +37,15 @@ import dtools from "@/plugins/debug-tools.js";
 export default {
   data() {
     return {
-      inputs: []
+      inputs: [],
+      regist: []
     };
   },
   methods: {
     submit() {
       const db = firebase.firestore();
       let dbWords = db.collection("test");
+      let dbregist = db.collection("members");
       this.inputs.forEach(word => {
         let inputWord = word;
         if (inputWord != "") {
@@ -48,6 +59,17 @@ export default {
             });
         }
       });
+      this.regist.forEach(member=> {
+        let inputmember = member;
+        if(inputmember  !=  ""){
+          dbregist.add({
+            member: inputmember
+          })
+          .then(ref =>{
+            dtools.log("ADD MEMBER: ", ref.member)
+          })
+        }
+      })
     }
   }
 };
