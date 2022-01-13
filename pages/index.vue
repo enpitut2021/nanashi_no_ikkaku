@@ -5,7 +5,8 @@
     <div
       style="max-width: 50%; text-align: center; font-size: 30px; margin: 30px"
     >
-      <label>最近のマイブームは</label>
+    <div> 
+<label>最近のマイブームは</label>
       <input
         style="font-size: 30px"
         type="text"
@@ -14,7 +15,9 @@
         placeholder="瞑想"
       />
       <label>です！</label>
-      <label>なまえは</label>
+    </div>
+      <div>
+              <label>なまえは</label>
       <input
         style="font-size: 30px"
         type="text"
@@ -23,6 +26,7 @@
         placeholder="花子"
       />
       <label>です！</label>
+      </div>
     </div>
     <nuxt-link to="/main">
       <button @click="submit">こんにちは</button>
