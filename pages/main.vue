@@ -1,76 +1,89 @@
 <template>
   <div class="origin">
-    <div>
-      <div class="bottom-input">
-        <p>
-          <input type="text" v-model="field" placeholder="ワード" />
-          <button
-            @click="
-              submit(field);
-              field = '';
-            "
-          >
-            追加
-          </button>
-        </p>
-      </div>
-      <div class="align-center">
+	<section class="section">
+    <div class="columns is-centered">
+      <div class="column is-half">
         <!-- <h2 v-show="time">
           {{ this.odai[0] }}
            <input type="text" v-model="odaiAns" placeholder="答え" />
           <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
           </h2> 
         <h2 v-show="space">&nbsp;&nbsp;</h2>-->
-        <h2>
+        <h1 class="title is-1 has-text-centered">
           {{ this.currentWadai }}
-        </h2>
+        </h1>
+		<div class="card p-5 is-rounded">
         <p>
-          <input type="text" v-model="wadai" placeholder="話題" />
-          <button
+			<b-field label="話題">
+            	<b-input v-model="wadai"></b-input>
+        	</b-field>
+          <b-button
             @click="
               changeWadai(wadai);
               wadai = '';
             "
           >
             変更
-          </button>
+          </b-button>
         </p>
+		</div>
       </div>
     </div>
+	</section>
     <div class="suggest-name">
       <p v-show="showName" class="under-button-item">
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
       </p>
       <p class="under-button-item">
-        <button
+        <b-button size="is-large"
           v-show="showButton"
           @click="
             showName = true;
             showButton = false;
           "
         >
-          おすすめのチーム名を見る
-        </button>
+          <b-icon
+                icon="arrow-right-circle"
+                size="is-large">
+            </b-icon>
+        </b-button>
       </p>
     </div>
     <!-- <div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
 	<h2 v-show="shoukai">自己紹介をしてみよう</h2>
     </div> -->
-    <div v-for="row in arrangedWords" :key="row.id" class="word-margin">
-      <div class="word-align">
-        <button
+    <div v-for="row in arrangedWords" :key="row.id" class="word-margin columns">
+      <div class="word-align column is-full">
+        <b-button
+		  type="is-primary" outlined
           @click="good(item.id)"
           v-for="item in row"
           :key="item.id"
           class="moji"
+		  v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }"
         >
-          <div v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }">
             {{ item.word + (showUpvote ? "👍" : "") }}
-          </div>
-        </button>
+        </b-button>
       </div>
     </div>
+	<div class="bottom-input columns is-centered">
+        <div class="column is-half card">
+          <p>
+			<b-field label="ワード">
+            	<b-input v-model="field"></b-input>
+        	</b-field>
+            <b-button
+              @click="
+                submit(field);
+                field = '';
+              "
+            >
+              追加
+            </b-button>
+          </p>
+        </div>
+      </div>
 	<div>
 	<p>いま話してるメンバー</p>
       <p v-for="member in members" :key="member.id">{{ member.member }}</p>
@@ -88,11 +101,11 @@ h2 {
   margin-bottom: 1rem;
 }
 
-.bottom-input {
+/* .bottom-input {
   position: fixed;
   bottom: 20px;
   left: 20px;
-}
+} */
 
 .word-margin {
   margin-bottom: 30px;
@@ -133,8 +146,11 @@ h2 {
   position: relative;
   transform: translate3d(0, 5px, 0);
 }
-</style>
 
+.card{
+	background-color: rose;
+}
+</style>
 <script>
 import firebase from "@/plugins/firebase";
 import dtools from "@/plugins/debug-tools.js";
