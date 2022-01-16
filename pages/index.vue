@@ -5,7 +5,7 @@
     <div
       style="max-width: 50%; text-align: center; font-size: 30px; margin: 30px"
     >
-    <div> 
+    <!-- <div> 
       <label>最近のマイブームは</label>
       <input
         style="font-size: 30px"
@@ -15,7 +15,7 @@
         placeholder="瞑想"
       />
       <label>です！</label>
-    </div>
+    </div> -->
       <div>
         <label>なまえは</label>
         <input
