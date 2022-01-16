@@ -3,7 +3,7 @@
     style="width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center"
   >
     <div
-      style="max-width: 50%; text-align: center; font-size: 30px; margin: 30px"
+      style="max-width: 50%; text-align: center; font-size: 30px; margin: 10px"
     >
     <!-- <div> 
       <label>最近のマイブームは</label>
@@ -22,7 +22,7 @@
       <img src="~assets/images/ナナシロゴ_背景透過.png" alt="">
     </div>
     <p class="subtitle">
-      ナナシはオンラインで使う、初対面のチーム向けのアイスブレイクアプリです。
+      ナナシはオンラインで使う、初対面のチーム向けのアイスブレイクアプリです。<br>お題に答える、話し合う、ワードを押してリアクションをすることで仲良くなれるし、いつの間にかチーム名が決まっています!?
     </p>
   </div>
 </section>
@@ -39,7 +39,7 @@
       </div>
     </div>
     <nuxt-link to="/main">
-      <b-button @click="submit">こんにちは</b-button>
+      <b-button @click="submit" class="mb-5">こんにちは</b-button>
     </nuxt-link>
   </div>
 </template>
