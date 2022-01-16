@@ -16,6 +16,16 @@
       />
       <label>です！</label>
     </div> -->
+<section class="hero">
+  <div class="hero-body">
+    <div>
+      <img src="~assets/images/ナナシロゴ_背景透過.png" alt="">
+    </div>
+    <p class="subtitle">
+      ナナシはオンラインで使う、初対面のチーム向けのアイスブレイクアプリです。
+    </p>
+  </div>
+</section>
       <div>
         <label>なまえは</label>
         <input
