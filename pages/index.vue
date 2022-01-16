@@ -39,7 +39,7 @@
       </div>
     </div>
     <nuxt-link to="/main">
-      <b-button @click="submit" class="mb-5">こんにちは</b-button>
+      <b-button @click="submit" class="mb-5">アイスブレイクを始める</b-button>
     </nuxt-link>
   </div>
 </template>
