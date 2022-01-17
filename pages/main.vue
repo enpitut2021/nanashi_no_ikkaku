@@ -1,7 +1,7 @@
 <template>
   <div class="origin">
     <div class="columns is-fullheight">
-      <Sidebar/>
+      <Sidebar :members="members"/>
       <div class="container column is-10">
         <div class="columns is-centered">
           <div class="column is-half mt-5">
@@ -45,10 +45,6 @@
               </b-button>
             </p>
           </div>
-        </div>
-        <div>
-          <p>いま話してるメンバー</p>
-          <p v-for="member in members" :key="member.id">{{ member.member }}</p>
         </div>
         <div class="suggest-name">
           <p v-show="showName" class="under-button-item">
