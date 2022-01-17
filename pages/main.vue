@@ -1,102 +1,80 @@
 <template>
   <div class="origin">
-	<section class="section">
-    <div class="columns is-centered">
-      <div class="column is-half">
-        <h1 class="title is-1 has-text-centered">
-          {{ this.currentWadai }}
-        </h1>
-		<div class="card p-5 is-rounded">
-        <p>
-			<b-field label="話題">
-            	<b-input v-model="wadai"></b-input>
-        	</b-field>
-          <b-button
-            @click="
-              changeWadai(wadai);
-              wadai = '';
-            "
-          >
-            変更
-          </b-button>
-        </p>
-		</div>
-      </div>
-    </div>
-	</section>
-    <div class="suggest-name">
-      <p v-show="showName" class="under-button-item">
-        おすすめのチーム名：
-        {{ this.words.length != 0 ? this.words[0].word : "" }}
-      </p>
-      <p class="under-button-item">
-        <b-button size="is-large"
-          v-show="showButton"
-          @click="
-            showName = true;
-            showButton = false;
-          "
+    <div class="columns is-fullheight">
+      <Sidebar :members="members" />
+      <div class="container column is-10">
+        <div class="columns is-centered">
+          <div class="column mt-5">
+            <h1 class="title is-1 has-text-centered">
+              {{ this.currentWadai }}
+            </h1>
+            <div class="columns is-centered">
+              <div class="column is-half card p-3">
+                <p>
+                  <b-field label="アンサー">
+                    <b-input v-model="field"></b-input>
+                  </b-field>
+                  <b-button
+                    @click="
+                      submit(field);
+                      field = '';
+                    "
+                  >
+                    追加
+                  </b-button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          v-for="row in arrangedWords"
+          :key="row.id"
+          class="word-margin columns"
         >
-          <b-icon
-                icon="arrow-right-circle"
-                size="is-large">
-            </b-icon>
-        </b-button>
-      </p>
-    </div>
-    <div v-for="row in arrangedWords" :key="row.id" class="word-margin columns">
-      <div class="word-align column is-full">
-        <b-button
-		  type="is-primary" outlined
-          @click="good(item.id)"
-          v-for="item in row"
-          :key="item.id"
-          class="moji"
-		  v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }"
-        >
-            {{ item.word + (showUpvote ? "👍" : "") }}
-        </b-button>
-      </div>
-    </div>
-	<div class="bottom-input columns is-centered">
-        <div class="column is-half card p-5">
-          <p>
-			<b-field label="ワード">
-            	<b-input v-model="field"></b-input>
-        	</b-field>
+          <div class="word-align column is-full">
             <b-button
+              type="is-primary"
+              outlined
+              @click="good(item.id)"
+              v-for="item in row"
+              :key="item.id"
+              class="moji"
+              v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }"
+            >
+              {{ item.word + (showUpvote ? "👍" : "") }}
+            </b-button>
+          </div>
+        </div>
+        <div class="suggest-name">
+          <p v-show="showName" class="under-button-item">
+            おすすめのチーム名：
+            {{ this.words.length != 0 ? this.words[0].word : "" }}
+          </p>
+          <p class="under-button-item">
+            <b-button
+              size="is-large"
+              v-show="showButton"
               @click="
-                submit(field);
-                field = '';
+                showName = true;
+                showButton = false;
               "
             >
-              追加
+              <b-icon icon="arrow-right-circle" size="is-large"> </b-icon>
             </b-button>
           </p>
         </div>
       </div>
-	<div>
-	<p>いま話してるメンバー</p>
-      <p v-for="member in members" :key="member.id">{{ member.member }}</p>
     </div>
   </div>
 </template>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
 h2 {
   margin: 0;
 }
-
 .origin {
-  margin-top: 1rem;
   margin-bottom: 1rem;
-}
-
-.bottom-input {
-  position: fixed;
-  width: 100%;
-  bottom: 20px;
-  left: 20px;
 }
 
 .word-margin {
@@ -139,13 +117,14 @@ h2 {
   transform: translate3d(0, 5px, 0);
 }
 
-.card{
-	background-color: rose;
+.card {
+  background-color: rose;
 }
 </style>
 <script>
 import firebase from "@/plugins/firebase";
 import dtools from "@/plugins/debug-tools.js";
+import Sidebar from "../components/Sidebar.vue";
 export default {
   data() {
     return {
@@ -233,7 +212,9 @@ export default {
     this.words = obj;
     this.members = obj2;
   },
-
+  components: {
+    Sidebar
+  },
   methods: {
     submit(field) {
       let kizon = false;
