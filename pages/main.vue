@@ -4,7 +4,7 @@
     <div class="columns is-centered">
       <div class="column is-half">
         <h1 class="title is-1 has-text-centered">
-          {{ this.currentWadai }}
+          {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
         </h1>
 		<div class="card p-5 is-rounded">
         <p>
@@ -146,7 +146,8 @@ export default {
       showButton: true,
       shoukai: true,
       space: true,
-      currentWadai: "",
+      wadaiIndex: 0,
+      wadais: [],
       showUpvote: false,
       phase: 1, // 0は始まる前、１はお題に答えている途中、2はリアクションタイム
       buttonCount: 0, //今のフェーズでボタンを何人押したか
@@ -161,9 +162,14 @@ export default {
     const db = firebase.firestore();
     let wadaiRef = db.collection("wadai");
     wadaiRef
-      .doc("userWadai")
+      .doc("wadaiList")
       .onSnapshot(snapshot => {
-        this.currentWadai = snapshot.data()["wadai"];
+        this.wadais = snapshot.data()["wadais"];
+      });
+    wadaiRef
+      .doc("wadaiIndex")
+      .onSnapshot(snapshot => {
+        this.wadaiIndex = snapshot.data()["index"];
       });
     wadaiRef
       .doc("buttonStatus")
