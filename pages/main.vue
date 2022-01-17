@@ -29,7 +29,7 @@
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
       </p>
-      <NextButton @click="showName = true; showButton = false;"/>
+      <NextButton @click="buttonPush"/>
     </div>
     <div v-for="row in arrangedWords" :key="row.id" class="word-margin columns">
       <div class="word-align column is-full">
@@ -148,7 +148,8 @@ export default {
       space: true,
       currentWadai: "",
       showUpvote: false,
-
+      phase: 0, // 0は始まる前、１はお題に答えている途中、2はリアクションタイム
+      buttonCount: 0, //今のフェーズでボタンを何人押したか
     };
   },
 
@@ -158,16 +159,18 @@ export default {
     const obj = [];
     const obj2 = [];
     const db = firebase.firestore();
-    db.collection("odai")
-      .doc("odai")
-      .onSnapshot(snapshot => {
-        dtools.log(snapshot.data()["odaiIndex"]);
-        this.index = snapshot.data()["odaiIndex"];
-      });
-    db.collection("wadai")
+    let wadaiRef = db.collection("wadai");
+    wadaiRef
       .doc("userWadai")
       .onSnapshot(snapshot => {
         this.currentWadai = snapshot.data()["wadai"];
+      });
+    wadaiRef
+      .doc("buttonStatus")
+      .onSnapshot(snapshot => {
+        this.buttonCount = snapshot.data()["buttonCount"]
+        this.next(this.buttonCount)
+        dtools.log("誰かががボタンを押した");
       });
     db.collection("members").onSnapshot(function(snapshot) {
       obj2.splice(0);
@@ -277,11 +280,32 @@ export default {
             .update({
               good: newGood
             })
-            .then(() => {
-              dtools.log("Good can't be updated.");
-            });
         }
       });
+    },
+
+    buttonPush() {
+      const db = firebase.firestore();
+      let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
+      dbButtonStatus.get().then((doc) => {
+        if (doc.exists) {
+          let newButtonCount = doc.data().buttonCount + 1;
+          dbButtonStatus.update({
+            buttonCount: newButtonCount
+          }).then(() => {
+            dtools.log("自分がボタンを押した");
+          });
+        }
+      });
+    },
+
+    next(pushCount) {
+      // 次に進むボタンが押された時動く（自分以外が押した時も）
+      if (this.phase == 1 && pushCount == this.members.length) {
+        this.phase = 0;
+        // ここにお題を次のに進めるロジックを書く
+        dtools.log("みんなボタン押したよ")
+      }
     },
 
     arrangeWords(words) {
