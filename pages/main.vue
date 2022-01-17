@@ -148,7 +148,7 @@ export default {
       space: true,
       currentWadai: "",
       showUpvote: false,
-      phase: 0, // 0は始まる前、１はお題に答えている途中、2はリアクションタイム
+      phase: 1, // 0は始まる前、１はお題に答えている途中、2はリアクションタイム
       buttonCount: 0, //今のフェーズでボタンを何人押したか
     };
   },
@@ -170,7 +170,7 @@ export default {
       .onSnapshot(snapshot => {
         this.buttonCount = snapshot.data()["buttonCount"]
         this.next(this.buttonCount)
-        dtools.log("誰かががボタンを押した");
+        // dtools.log("誰かががボタンを押した");
       });
     db.collection("members").onSnapshot(function(snapshot) {
       obj2.splice(0);
@@ -293,7 +293,7 @@ export default {
           dbButtonStatus.update({
             buttonCount: newButtonCount
           }).then(() => {
-            dtools.log("自分がボタンを押した");
+            // dtools.log("自分がボタンを押した");
           });
         }
       });
@@ -301,7 +301,11 @@ export default {
 
     next(pushCount) {
       // 次に進むボタンが押された時動く（自分以外が押した時も）
-      if (this.phase == 1 && pushCount == this.members.length) {
+      dtools.log("ボタン押した人は"+pushCount+"人（"+this.members.length+"人中）")
+      dtools.log("今のフェーズは:"+this.phase)
+      if (this.phase == 1 
+          && this.members.length != 0
+          && pushCount >= this.members.length) {
         this.phase = 0;
         // ここにお題を次のに進めるロジックを書く
         dtools.log("みんなボタン押したよ")
