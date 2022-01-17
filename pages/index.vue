@@ -5,17 +5,6 @@
     <div
       style="max-width: 50%; text-align: center; font-size: 30px; margin: 10px"
     >
-    <!-- <div> 
-      <label>最近のマイブームは</label>
-      <input
-        style="font-size: 30px"
-        type="text"
-        v-model="inputs[1]"
-        size="10"
-        placeholder="瞑想"
-      />
-      <label>です！</label>
-    </div> -->
 <section class="hero">
   <div class="hero-body">
     <div>
