@@ -175,7 +175,6 @@ export default {
       .doc("buttonStatus")
       .onSnapshot(snapshot => {
         this.buttonCount = snapshot.data()["buttonCount"]
-        this.next(this.buttonCount)
         // dtools.log("誰かががボタンを押した");
       });
     db.collection("members").onSnapshot(function(snapshot) {
@@ -296,26 +295,43 @@ export default {
       dbButtonStatus.get().then((doc) => {
         if (doc.exists) {
           let newButtonCount = doc.data().buttonCount + 1;
-          dbButtonStatus.update({
-            buttonCount: newButtonCount
-          }).then(() => {
-            // dtools.log("自分がボタンを押した");
-          });
+          if (newButtonCount == this.members.length) {
+            // 自分がボタンを最後に押す人だったら
+            this.phase = 0; 
+            //　ボタン押した人数をリセット
+            const db = firebase.firestore();
+            let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
+            dbButtonStatus.get().then((doc) => {
+              if (doc.exists) {
+                dbButtonStatus.update({
+                  buttonCount: 0
+                }).then(() => {
+                  dtools.log("押した人数リセット");
+                });
+              }
+            });
+            //お題を１つ進める
+            let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
+            dbWadaiIndex.get().then((doc) => {
+              dtools.log(doc.data().index)
+              if (doc.exists) {
+                dbWadaiIndex.update({
+                  index: doc.data().index + 1
+                }).then(() => {
+                  dtools.log("お題を進めた");
+                });
+              }
+            });
+            dtools.log("みんなボタン押したよ")
+          } else {
+            // 自分がボタンを最後に押す人じゃなかったら
+            dbButtonStatus.update({
+              buttonCount: newButtonCount
+            });
+          }
         }
       });
-    },
 
-    next(pushCount) {
-      // 次に進むボタンが押された時動く（自分以外が押した時も）
-      dtools.log("ボタン押した人は"+pushCount+"人（"+this.members.length+"人中）")
-      dtools.log("今のフェーズは:"+this.phase)
-      if (this.phase == 1 
-          && this.members.length != 0
-          && pushCount >= this.members.length) {
-        this.phase = 0;
-        // ここにお題を次のに進めるロジックを書く
-        dtools.log("みんなボタン押したよ")
-      }
     },
 
     arrangeWords(words) {
