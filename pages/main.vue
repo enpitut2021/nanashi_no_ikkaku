@@ -29,20 +29,7 @@
         おすすめのチーム名：
         {{ this.words.length != 0 ? this.words[0].word : "" }}
       </p>
-      <p class="under-button-item">
-        <b-button size="is-large"
-          v-show="showButton"
-          @click="
-            showName = true;
-            showButton = false;
-          "
-        >
-          <b-icon
-                icon="arrow-right-circle"
-                size="is-large">
-            </b-icon>
-        </b-button>
-      </p>
+      <NextButton @click="showName = true; showButton = false;"/>
     </div>
     <div v-for="row in arrangedWords" :key="row.id" class="word-margin columns">
       <div class="word-align column is-full">
@@ -155,28 +142,13 @@ export default {
       time: false,
       timerId: undefined,
       field: "",
-      odaiAns: "",
-      odai: [
-        // "出身が一番北の人は誰ですか？",
-        // "来世は何の生き物になりたいですか？",
-        // "味噌汁に入ってると嬉しいものはなんですか？",
-        // "最近あった7番目に嬉しいことは何ですか？",
-        // "「私実は〇〇なんです」",
-        // "好きなポケモンはなんですか？",
-        // "自分を一つの漢字で表してみましょう"
-        "タメ口で話そう!!!"
-        // "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
-        // "テンションを高くしろ！！！",
-        // "いちばん名前の文字数が長い人が武士になる(同率はありやで)",
-        // "自分を一つの漢字で表してみましょう",
-      ],
-      index: -1,
       showName: false,
       showButton: true,
       shoukai: true,
       space: true,
       currentWadai: "",
-      showUpvote: false
+      showUpvote: false,
+
     };
   },
 
