@@ -47,22 +47,27 @@
           </div>
         </div>
         <div class="suggest-name">
-          <p v-show="showName" class="under-button-item">
-            おすすめのチーム名：
-            {{ this.words.length != 0 ? this.words[0].word : "" }}
-          </p>
-          <p class="under-button-item">
-            <b-button
-              size="is-large"
-              v-show="showButton"
-              @click="
-                showName = true;
-                showButton = false;
-              "
-            >
-              <b-icon icon="arrow-right-circle" size="is-large"> </b-icon>
-            </b-button>
-          </p>
+          <b-button size="is-large" @click="isCardModalActive = true">
+            <b-icon icon="arrow-right-circle" size="is-large"> </b-icon>
+          </b-button>
+          <b-modal v-model="isCardModalActive" :width="640" scroll="keep">
+            <div class="card pb-6">
+              <div class="card-image">
+                <figure class="image is-100x100">
+                  <img
+                    src="~assets/images/ナナシロゴ_背景透過.png"
+                    alt="Image"
+                  />
+                </figure>
+              </div>
+              <div class="content">
+                <p class="title is-4 has-text-centered">
+                  おすすめのチーム名：
+                  {{ this.words.length != 0 ? this.words[0].word : "" }}
+                </p>
+              </div>
+            </div>
+          </b-modal>
         </div>
       </div>
     </div>
@@ -151,11 +156,11 @@ export default {
       ],
       index: -1,
       showName: false,
-      showButton: true,
       shoukai: true,
       space: true,
       currentWadai: "",
-      showUpvote: false
+      showUpvote: false,
+      isCardModalActive: false
     };
   },
 
