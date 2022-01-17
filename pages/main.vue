@@ -1,26 +1,11 @@
 <template>
   <div class="origin">
 	<section class="section">
-    <div class="columns is-centered">
+    <div class="columns is-centered is-fullheight">
       <div class="column is-half">
         <h1 class="title is-1 has-text-centered">
           {{ this.currentWadai }}
         </h1>
-		<div class="card p-5 is-rounded">
-        <p>
-			<b-field label="話題">
-            	<b-input v-model="wadai"></b-input>
-        	</b-field>
-          <b-button
-            @click="
-              changeWadai(wadai);
-              wadai = '';
-            "
-          >
-            変更
-          </b-button>
-        </p>
-		</div>
       </div>
     </div>
 	</section>
