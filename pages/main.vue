@@ -3,12 +3,6 @@
 	<section class="section">
     <div class="columns is-centered">
       <div class="column is-half">
-        <!-- <h2 v-show="time">
-          {{ this.odai[0] }}
-           <input type="text" v-model="odaiAns" placeholder="答え" />
-          <button @click="submit(odaiAns); odaiAns=''; answer()">追加</button>
-          </h2> 
-        <h2 v-show="space">&nbsp;&nbsp;</h2>-->
         <h1 class="title is-1 has-text-centered">
           {{ this.currentWadai }}
         </h1>
@@ -50,9 +44,6 @@
         </b-button>
       </p>
     </div>
-    <!-- <div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
-	<h2 v-show="shoukai">自己紹介をしてみよう</h2>
-    </div> -->
     <div v-for="row in arrangedWords" :key="row.id" class="word-margin columns">
       <div class="word-align column is-full">
         <b-button
@@ -223,38 +214,17 @@ export default {
           obj.push(data);
           // dtools.log(obj)
         });
-
         // 表示用にワードを菱形に変形（二次元配列）
         this.arrangedWords = this.arrangeWords(obj);
-
         // ワードの配列の更新の度にソートする。いいね数が大きいのが先に来るのに注意
         // アロー関数（arrow function）と三項演算子(ternary operator）を使ってる。
         obj.sort((a, b) => (a.good > b.good ? -1 : a.good < b.good ? 1 : 0));
-
-        // お題表示タイマーのリセット
-        // this.time = false; //一旦表示を消す
-        // clearTimeout(this.timerId);
-        // 新しくタイマーの設定
-        // this.timerId = setTimeout(
-        //  function() {
-        //    this.time = true;
-        //  }.bind(this),
-        //  dtools.ODAI_WAIT_TIME
-        // );
       }.bind(this)
     );
     this.timerId = setTimeout(
       function() {
-        //  this.shoukai = false;
         this.time = true;
         this.space = false;
-        // 30秒後にお題を非表示にする
-        //  setTimeout(() => {
-        // お題の場合以下をコメント外して
-        //  this.time = false;
-        // 姿勢の場合以下をコメント外して
-        // this.answer();
-        //  }, dtools.ODAI_WAIT_TIME);
       }.bind(this),
       120000
     );
@@ -324,15 +294,6 @@ export default {
           odaiIndex: this.index + 1
         });
     },
-
-    // showOdai() {
-    //     this.time = true;
-    // 	// 30秒後にお題を非表示にする
-    // 	setTimeout(() => {
-    //       this.time = false;
-    // 	}, dtools.ODAI_WAIT_TIME);
-    // },
-
     good(id) {
       const db = firebase.firestore();
       let dbWord = db.collection("test").doc(id);
