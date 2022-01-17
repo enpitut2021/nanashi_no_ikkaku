@@ -260,14 +260,14 @@ export default {
 
     buttonPush() {
       //すでに今の話題に対して次にすすむボタンを押していたらreturn
-      if (this.memberStatus["花子"])
+      if (this.memberStatus[this.username])
         return
       const db = firebase.firestore();
       let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
       dbButtonStatus.get().then((doc) => {
         if (doc.exists) {
           let newMemberStatus = doc.data().memberStatus;
-          newMemberStatus["花子"] = true;
+          newMemberStatus[this.username] = true;
           for (const [key, value] of Object.entries(newMemberStatus)) {
             //押してない人がいたら
             if (!value) {
