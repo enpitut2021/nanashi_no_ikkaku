@@ -150,7 +150,7 @@ export default {
       wadais: [],
       showUpvote: false,
       phase: 1, // 0は始まる前、１はお題に答えている途中、2はリアクションタイム
-      buttonCount: 0, //今のフェーズでボタンを何人押したか
+      memberStatus: {}, //今のフェーズでボタンを誰が押したか
     };
   },
 
@@ -174,7 +174,7 @@ export default {
     wadaiRef
       .doc("buttonStatus")
       .onSnapshot(snapshot => {
-        this.buttonCount = snapshot.data()["buttonCount"]
+        this.memberStatus = snapshot.data()["memberStatus"]
         // dtools.log("誰かががボタンを押した");
       });
     db.collection("members").onSnapshot(function(snapshot) {
@@ -239,41 +239,6 @@ export default {
       }
     },
 
-    changeWadai(wadai) {
-      const db = firebase.firestore();
-      let dbWadai = db.collection("wadai").doc("userWadai");
-      let inputWadai = wadai;
-      if (inputWadai != "") {
-        dbWadai
-          .update({
-            wadai: inputWadai
-          })
-          .then(ref => {
-            dtools.log("Add ID: ", ref.id);
-          });
-      }
-    },
-
-    answer() {
-      // お題表示タイマーのリセット
-      this.time = false; //一旦表示を消す
-      clearTimeout(this.timerId);
-      // 新しくタイマーの設定
-      this.timerId = setTimeout(
-        function() {
-          this.time = true;
-        }.bind(this),
-        dtools.ODAI_WAIT_TIME
-      );
-
-      // firebase上でお題のindexを１増やす
-      const db = firebase.firestore();
-      db.collection("odai")
-        .doc("odai")
-        .set({
-          odaiIndex: this.index + 1
-        });
-    },
     good(id) {
       const db = firebase.firestore();
       let dbWord = db.collection("test").doc(id);
@@ -290,45 +255,62 @@ export default {
     },
 
     buttonPush() {
+      //すでに今の話題に対して次にすすむボタンを押していたらreturn
+      if (this.memberStatus["花子"])
+        return
       const db = firebase.firestore();
       let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
       dbButtonStatus.get().then((doc) => {
         if (doc.exists) {
-          let newButtonCount = doc.data().buttonCount + 1;
-          if (newButtonCount == this.members.length) {
-            // 自分がボタンを最後に押す人だったら
-            this.phase = 0; 
-            //　ボタン押した人数をリセット
-            const db = firebase.firestore();
-            let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
-            dbButtonStatus.get().then((doc) => {
-              if (doc.exists) {
-                dbButtonStatus.update({
-                  buttonCount: 0
-                }).then(() => {
-                  dtools.log("押した人数リセット");
-                });
-              }
-            });
-            //お題を１つ進める
-            let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
-            dbWadaiIndex.get().then((doc) => {
-              dtools.log(doc.data().index)
-              if (doc.exists) {
-                dbWadaiIndex.update({
-                  index: doc.data().index + 1
-                }).then(() => {
-                  dtools.log("お題を進めた");
-                });
-              }
-            });
-            dtools.log("みんなボタン押したよ")
-          } else {
-            // 自分がボタンを最後に押す人じゃなかったら
-            dbButtonStatus.update({
-              buttonCount: newButtonCount
-            });
+          let newMemberStatus = doc.data().memberStatus;
+          newMemberStatus["花子"] = true;
+          for (const [key, value] of Object.entries(newMemberStatus)) {
+            //押してない人がいたら
+            if (!value) {
+              //更新したmemberStatusをfirebaseに送信
+              const db = firebase.firestore();
+              let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
+              dbButtonStatus.get().then((doc) => {
+                if (doc.exists) {
+                  dbButtonStatus.update({
+                    memberStatus: newMemberStatus
+                  }).then(() => {
+                    dtools.log("押した人更新");
+                  });
+                }
+              });
+              return;
+            }
           }
+
+          // 全員が押していたら次の処理に進む
+          this.phase = 0; 
+          //　ボタン押した人数をリセット
+          Object.keys(this.memberStatus).forEach(i => this.memberStatus[i] = false)
+          const db = firebase.firestore();
+          let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
+          dbButtonStatus.get().then((doc) => {
+            if (doc.exists) {
+              dbButtonStatus.update({
+                memberStatus: this.memberStatus
+              }).then(() => {
+                dtools.log("押した人リセット");
+              });
+            }
+          });
+          //お題を１つ進める
+          let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
+          dbWadaiIndex.get().then((doc) => {
+            dtools.log(doc.data().index)
+            if (doc.exists) {
+              dbWadaiIndex.update({
+                index: doc.data().index + 1
+              }).then(() => {
+                dtools.log("お題を進めた");
+              });
+            }
+          });
+          dtools.log("みんなボタン押したよ")
         }
       });
 
