@@ -47,8 +47,8 @@
           </div>
         </div>
         <div class="suggest-name">
-          <b-button size="is-large" @click="isCardModalActive = true">
-            <b-icon icon="arrow-right-circle" size="is-large"> </b-icon>
+          <b-button  @click="isCardModalActive = true">
+            おすすめのチーム名を見る
           </b-button>
           <b-modal v-model="isCardModalActive" :width="640" scroll="keep">
             <div class="card pb-6">
