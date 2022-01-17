@@ -27,7 +27,7 @@
         <label>です！</label>
       </div>
     </div>
-    <nuxt-link to="/main">
+    <nuxt-link :to="{name: 'main', params: { member: regist[1]}}">
       <b-button @click="submit" class="mb-5">アイスブレイクを始める</b-button>
     </nuxt-link>
   </div>
@@ -49,6 +49,7 @@ export default {
       const db = firebase.firestore();
       let dbWords = db.collection("test");
       let dbregist = db.collection("members");
+      let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
       this.inputs.forEach(word => {
         let inputWord = word;
         if (inputWord != "") {
@@ -71,6 +72,17 @@ export default {
           .then(ref =>{
             dtools.log("ADD MEMBER: ", ref.member)
           })
+          dbButtonStatus.get().then((doc) => {
+              dtools.log("新しくbuttonStatus")
+            if (doc.exists) {
+              let newMemberStatus = Object.assign(doc.data().memberStatus, {[inputmember]: false})
+              dtools.log("新しくbuttonStatus")
+              dtools.log(newMemberStatus)
+              dbButtonStatus.update({
+                memberStatus: newMemberStatus
+              });
+            }
+          });
         }
       })
     }

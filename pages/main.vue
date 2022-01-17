@@ -151,10 +151,14 @@ export default {
       showUpvote: false,
       phase: 1, // 0は始まる前、１はお題に答えている途中、2はリアクションタイム
       memberStatus: {}, //今のフェーズでボタンを誰が押したか
+      username: ""
     };
   },
 
   mounted() {
+
+    this.username = this.$route.params.member
+
     // リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
     this.showUpvote = this.$route.query.showUpvote === "true";
     const obj = [];
