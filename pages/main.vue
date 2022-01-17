@@ -1,13 +1,30 @@
 <template>
   <div class="origin">
     <div class="columns is-fullheight">
-      <Sidebar :members="members"/>
+      <Sidebar :members="members" />
       <div class="container column is-10">
         <div class="columns is-centered">
-          <div class="column is-half mt-5">
+          <div class="column mt-5">
             <h1 class="title is-1 has-text-centered">
               {{ this.currentWadai }}
             </h1>
+            <div class="columns is-centered">
+              <div class="column is-half card p-3">
+                <p>
+                  <b-field label="アンサー">
+                    <b-input v-model="field"></b-input>
+                  </b-field>
+                  <b-button
+                    @click="
+                      submit(field);
+                      field = '';
+                    "
+                  >
+                    追加
+                  </b-button>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
         <div
@@ -27,23 +44,6 @@
             >
               {{ item.word + (showUpvote ? "👍" : "") }}
             </b-button>
-          </div>
-        </div>
-        <div class="bottom-input columns is-centered">
-          <div class="column is-half card p-5">
-            <p>
-              <b-field label="ワード">
-                <b-input v-model="field"></b-input>
-              </b-field>
-              <b-button
-                @click="
-                  submit(field);
-                  field = '';
-                "
-              >
-                追加
-              </b-button>
-            </p>
           </div>
         </div>
         <div class="suggest-name">
@@ -73,16 +73,8 @@
 h2 {
   margin: 0;
 }
-
 .origin {
   margin-bottom: 1rem;
-}
-
-.bottom-input {
-  position: fixed;
-  width: 100%;
-  bottom: 20px;
-  left: 20px;
 }
 
 .word-margin {
@@ -132,7 +124,7 @@ h2 {
 <script>
 import firebase from "@/plugins/firebase";
 import dtools from "@/plugins/debug-tools.js";
-import Sidebar from '../components/Sidebar.vue';
+import Sidebar from "../components/Sidebar.vue";
 export default {
   data() {
     return {
