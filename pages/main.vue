@@ -1,12 +1,5 @@
 <template>
   <div class="origin">
-<div class="suggest-name">
-      <p v-show="showName" class="under-button-item">
-        おすすめのチーム名：
-        {{ this.words.length != 0 ? this.words[0].word : "" }}
-      </p>
-      <NextButton @click="buttonPush"/>
-    </div>
     <div class="columns is-fullheight">
       <Sidebar :members="members" />
       <div class="container column is-10">
@@ -53,6 +46,14 @@
             </b-button>
           </div>
         </div>
+
+<div class="suggest-name">
+      <p v-show="showName" class="under-button-item">
+        おすすめのチーム名：
+        {{ this.words.length != 0 ? this.words[0].word : "" }}
+      </p>
+      <NextButton @click="buttonPush"/>
+    </div>
       </div>
     </div>
   </div>

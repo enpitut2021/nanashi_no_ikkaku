@@ -11,6 +11,13 @@
       </p>
 </template>
 
+<style lang="scss" scoped>
+.under-button-item {
+  float: left;
+  padding-right: 10px;
+}
+</style>
+
 <script>
 export default {
  methods: {
