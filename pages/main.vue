@@ -44,12 +44,13 @@
                   <b-input size="is-medium" v-model="field" placeholder="答え" rounded></b-input>
                  </b-field>
                 </span>
-                <span class="column is-2">
+                <span class="column is-2 pl-0">
                   <b-button
                     @click="
                       submit(field);
                       field = '';
                     "
+                  size="is-medium"
                   rounded>
                   追加
                   </b-button>
