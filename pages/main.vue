@@ -51,7 +51,7 @@
             おすすめのチーム名：
             {{ this.words.length != 0 ? this.words[0].word : "" }}
           </p>
-          <NextButton @click="buttonPush" 
+          <NextButton @click="buttonPush(); " 
           v-bind:message="buttonMessage" />
         </div>
           <b-modal v-model="isCardModalActive" :width="640" scroll="keep">
@@ -159,7 +159,7 @@ export default {
   computed: {
     buttonMessage() {
       return (this.wadaiIndex + 1 == this.wadais.length) ? 'おすすめのチーム名を見る': '次のお題に進む';
-    }
+    },
   },
 
   mounted() {
@@ -268,6 +268,9 @@ export default {
     },
 
     buttonPush() {
+      if (this.wadaiIndex + 1>= this.wadais.length) {
+        this.isCardModalActive = true;
+      }
       //すでに今の話題に対して次にすすむボタンを押していたらreturn
       if (this.memberStatus[this.username])
         return
@@ -311,10 +314,6 @@ export default {
               });
             }
           });
-          //お題が全て終わったら名前を表示する
-          if (this.wadaiIndex + 1 == this.wadais.length) {
-            this.isCardModalActive = true
-          }
           //お題を１つ進める
           let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
           dbWadaiIndex.get().then((doc) => {
