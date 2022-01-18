@@ -6,7 +6,7 @@
         <div class="columns is-centered">
           <div class="column mt-5">
             <h1 class="title is-1 has-text-centered">
-              {{ this.currentWadai }}
+          {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
             </h1>
             <div class="columns is-centered">
               <div class="column is-half card p-3">
@@ -45,11 +45,14 @@
               {{ item.word + (showUpvote ? "👍" : "") }}
             </b-button>
           </div>
-        </div>
+        </div> 
         <div class="suggest-name">
-          <b-button  @click="isCardModalActive = true">
-            おすすめのチーム名を見る
-          </b-button>
+          <p v-show="showName" class="under-button-item">
+            おすすめのチーム名：
+            {{ this.words.length != 0 ? this.words[0].word : "" }}
+          </p>
+          <NextButton @click="buttonPush"/>
+        </div>
           <b-modal v-model="isCardModalActive" :width="640" scroll="keep">
             <div class="card pb-6">
               <div class="card-image">
@@ -139,47 +142,44 @@ export default {
       time: false,
       timerId: undefined,
       field: "",
-      odaiAns: "",
-      odai: [
-        // "出身が一番北の人は誰ですか？",
-        // "来世は何の生き物になりたいですか？",
-        // "味噌汁に入ってると嬉しいものはなんですか？",
-        // "最近あった7番目に嬉しいことは何ですか？",
-        // "「私実は〇〇なんです」",
-        // "好きなポケモンはなんですか？",
-        // "自分を一つの漢字で表してみましょう"
-        "タメ口で話そう!!!"
-        // "自分の名前から話し始めてみようex.「〇〇は、ツーリングが趣味です」",
-        // "テンションを高くしろ！！！",
-        // "いちばん名前の文字数が長い人が武士になる(同率はありやで)",
-        // "自分を一つの漢字で表してみましょう",
-      ],
-      index: -1,
       showName: false,
       shoukai: true,
       space: true,
-      currentWadai: "",
+      isCardModalActive: false,
+      wadaiIndex: 0,
+      wadais: [],
       showUpvote: false,
-      isCardModalActive: false
+      phase: 1, // 0は始まる前、１はお題に答えている途中、2はリアクションタイム
+      memberStatus: {}, //今のフェーズでボタンを誰が押したか
+      username: ""
     };
   },
 
   mounted() {
+
+    this.username = this.$route.params.member
+
     // リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
     this.showUpvote = this.$route.query.showUpvote === "true";
     const obj = [];
     const obj2 = [];
     const db = firebase.firestore();
-    db.collection("odai")
-      .doc("odai")
+    let wadaiRef = db.collection("wadai");
+    wadaiRef
+      .doc("wadaiList")
       .onSnapshot(snapshot => {
-        dtools.log(snapshot.data()["odaiIndex"]);
-        this.index = snapshot.data()["odaiIndex"];
+        this.wadais = snapshot.data()["wadais"];
       });
-    db.collection("wadai")
-      .doc("userWadai")
+    wadaiRef
+      .doc("wadaiIndex")
       .onSnapshot(snapshot => {
-        this.currentWadai = snapshot.data()["wadai"];
+        this.wadaiIndex = snapshot.data()["index"];
+      });
+    wadaiRef
+      .doc("buttonStatus")
+      .onSnapshot(snapshot => {
+        this.memberStatus = snapshot.data()["memberStatus"]
+        // dtools.log("誰かががボタンを押した");
       });
     db.collection("members").onSnapshot(function(snapshot) {
       obj2.splice(0);
@@ -245,41 +245,6 @@ export default {
       }
     },
 
-    changeWadai(wadai) {
-      const db = firebase.firestore();
-      let dbWadai = db.collection("wadai").doc("userWadai");
-      let inputWadai = wadai;
-      if (inputWadai != "") {
-        dbWadai
-          .update({
-            wadai: inputWadai
-          })
-          .then(ref => {
-            dtools.log("Add ID: ", ref.id);
-          });
-      }
-    },
-
-    answer() {
-      // お題表示タイマーのリセット
-      this.time = false; //一旦表示を消す
-      clearTimeout(this.timerId);
-      // 新しくタイマーの設定
-      this.timerId = setTimeout(
-        function() {
-          this.time = true;
-        }.bind(this),
-        dtools.ODAI_WAIT_TIME
-      );
-
-      // firebase上でお題のindexを１増やす
-      const db = firebase.firestore();
-      db.collection("odai")
-        .doc("odai")
-        .set({
-          odaiIndex: this.index + 1
-        });
-    },
     good(id) {
       const db = firebase.firestore();
       let dbWord = db.collection("test").doc(id);
@@ -291,11 +256,74 @@ export default {
             .update({
               good: newGood
             })
-            .then(() => {
-              dtools.log("Good can't be updated.");
-            });
         }
       });
+    },
+
+    buttonPush() {
+      //すでに今の話題に対して次にすすむボタンを押していたらreturn
+      if (this.memberStatus[this.username])
+        return
+      const db = firebase.firestore();
+      let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
+      dbButtonStatus.get().then((doc) => {
+        if (doc.exists) {
+          let newMemberStatus = doc.data().memberStatus;
+          newMemberStatus[this.username] = true;
+          for (const [key, value] of Object.entries(newMemberStatus)) {
+            //押してない人がいたら
+            if (!value) {
+              //更新したmemberStatusをfirebaseに送信
+              const db = firebase.firestore();
+              let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
+              dbButtonStatus.get().then((doc) => {
+                if (doc.exists) {
+                  dbButtonStatus.update({
+                    memberStatus: newMemberStatus
+                  }).then(() => {
+                    dtools.log("押した人更新");
+                  });
+                }
+              });
+              return;
+            }
+          }
+
+          // 全員が押していたら次の処理に進む
+          this.phase = 0; 
+          //　ボタン押した人数をリセット
+          Object.keys(this.memberStatus).forEach(i => this.memberStatus[i] = false)
+          const db = firebase.firestore();
+          let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
+          dbButtonStatus.get().then((doc) => {
+            if (doc.exists) {
+              dbButtonStatus.update({
+                memberStatus: this.memberStatus
+              }).then(() => {
+                dtools.log("押した人リセット");
+              });
+            }
+          });
+          //お題が全て終わったら名前を表示する
+          if (this.wadaiIndex + 1 == this.wadais.length) {
+            this.isCardModalActive = true
+          }
+          //お題を１つ進める
+          let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
+          dbWadaiIndex.get().then((doc) => {
+            dtools.log(doc.data().index)
+            if (doc.exists) {
+              dbWadaiIndex.update({
+                index: doc.data().index + 1
+              }).then(() => {
+                dtools.log("お題を進めた");
+              });
+            }
+          });
+          dtools.log("みんなボタン押したよ")
+        }
+      });
+
     },
 
     arrangeWords(words) {
