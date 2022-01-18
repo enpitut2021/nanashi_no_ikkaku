@@ -2,6 +2,7 @@
     <p class="under-button-item">
         <b-button size="is-large"
         @click="trigger"
+        style="border:none"
         >
         <div class="disp-flex">
         <h1>{{ message }}</h1>

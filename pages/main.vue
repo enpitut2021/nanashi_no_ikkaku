@@ -1,36 +1,12 @@
 <template>
   <div class="origin">
     <div class="columns is-fullheight">
-      <Sidebar :members="members" />
+      <Sidebar :members="members"/>
       <div class="container column is-10">
-        <div class="columns is-centered">
-          <div class="column mt-5">
-            <h1 class="title is-1 has-text-centered">
-          {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
-            </h1>
-            <div class="columns is-centered">
-              <div class="column is-half card p-3">
-                <p>
-                  <b-field label="アンサー">
-                    <b-input v-model="field"></b-input>
-                  </b-field>
-                  <b-button
-                    @click="
-                      submit(field);
-                      field = '';
-                    "
-                  >
-                    追加
-                  </b-button>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
         <div
           v-for="row in arrangedWords"
           :key="row.id"
-          class="word-margin columns"
+          class="word-margin columns is-vcentered is-centered"
         >
           <div class="word-align column is-full">
             <b-button
@@ -40,20 +16,64 @@
               v-for="item in row"
               :key="item.id"
               class="moji"
-              v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }"
+              v-bind:style="{ fontSize: 2 + Math.log(1 + item.good) + 'vh' }"
             >
               {{ item.word + (showUpvote ? "👍" : "") }}
             </b-button>
           </div>
         </div> 
-        <div class="suggest-name">
-          <p v-show="showName" class="under-button-item">
-            おすすめのチーム名：
-            {{ this.words.length != 0 ? this.words[0].word : "" }}
-          </p>
-          <NextButton @click="buttonPush(); " 
-          v-bind:message="buttonMessage" />
+
+        <div v-show="slideCard" class="odai-input">
+          <b-button size="is-large" @click="showCard = true; slideCard = false;">
+            <!-- <b-icon pack="fa" icon="angle-left" size="is-large"/> //なんかアイコンにできなかった　--> 
+            ＜
+          </b-button>
         </div>
+        
+        <div v-show="showCard" class="odai-input">
+            <div class="card p-4">
+              <header class="card-content">
+                <p class="title">
+                 {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
+                </p>
+              </header>
+              
+              <p class="content columns is-vcentered is-centered">
+                <span class="column is-10">
+                 <b-field>
+                  <b-input size="is-medium" v-model="field" placeholder="答え" rounded></b-input>
+                 </b-field>
+                </span>
+                <span class="column is-2">
+                  <b-button
+                    @click="
+                      submit(field);
+                      field = '';
+                    "
+                  rounded>
+                  追加
+                  </b-button>
+                </span>
+              </p>
+              
+                
+              <footer class="card-footer">
+                <p class="under-button-item card-footer-item">
+                    <b-button size="is-large"
+                    @click="showCard = false; slideCard = true"
+                    style="border:none"
+                    >
+                      <div class="disp-flex">
+                        <h1>隠す</h1>   
+                      </div>
+                    </b-button>
+                </p>
+            
+                <NextButton @click="buttonPush(); " 
+                  v-bind:message="buttonMessage" class="card-footer-item"/>
+                </footer>
+            </div>
+          </div>
           <b-modal v-model="isCardModalActive" :width="640" scroll="keep">
             <div class="card pb-6">
               <div class="card-image">
@@ -72,17 +92,33 @@
               </div>
             </div>
           </b-modal>
-        </div>
       </div>
     </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
+
+
+
+*{
+margin-top: 0;
+margin-bottom: 0;
+}
+
 h2 {
   margin: 0;
 }
+
 .origin {
   margin-bottom: 1rem;
+  width:100%!important;
+  height:100%!important;
+  position: fixed;
+}
+
+.is-fullheight{
+  height:100%!important;
 }
 
 .word-margin {
@@ -101,6 +137,13 @@ h2 {
   bottom: 20px;
   right: 20px;
 }
+
+.odai-input {
+  position: fixed;
+  right:20px;
+  bottom: 20px;
+}
+
 
 .align-center {
   text-align: center;
@@ -143,7 +186,8 @@ export default {
       timerId: undefined,
       wadaiFlag: undefined,
       field: "",
-      showName: false,
+      showCard: true,
+      slideCard: false,
       shoukai: true,
       space: true,
       isCardModalActive: false,
@@ -152,7 +196,8 @@ export default {
       showUpvote: false,
       phase: 1, // 0は始まる前、１はお題に答えている途中、2はリアクションタイム
       memberStatus: {}, //今のフェーズでボタンを誰が押したか
-      username: ""
+      username: "",
+      labelPosition: 'on-border'
     };
   },
 
