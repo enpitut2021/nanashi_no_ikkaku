@@ -33,18 +33,18 @@
         <div v-show="showCard" class="odai-input">
             <div class="card p-4">
               <header class="card-content">
-                <p class="title">
+                <p class="title has-text-centered">
                  {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
                 </p>
               </header>
               
               <p class="content columns is-vcentered is-centered">
-                <span class="column is-10">
+                <span class="column is-9">
                  <b-field>
                   <b-input size="is-medium" v-model="field" placeholder="答え" rounded></b-input>
                  </b-field>
                 </span>
-                <span class="column is-2 pl-0">
+                <span class="column is-2 pl-0 has-text-centered">
                   <b-button
                     @click="
                       submit(field);
@@ -52,7 +52,7 @@
                     "
                   size="is-medium"
                   rounded>
-                  追加
+                  ＞
                   </b-button>
                 </span>
               </p>
@@ -69,7 +69,6 @@
                       </div>
                     </b-button>
                 </p>
-            
                 <NextButton @click="buttonPush(); " 
                   v-bind:message="buttonMessage" class="card-footer-item"/>
                 </footer>
@@ -93,6 +92,9 @@
               </div>
             </div>
           </b-modal>
+          <div class="timer">
+            {{this.timerSec}}
+          </div>
       </div>
     </div>
   </div>
@@ -145,6 +147,11 @@ h2 {
   bottom: 20px;
 }
 
+.timer {
+  position: fixed;
+  right:20px;
+  top: 20px;
+}
 
 .align-center {
   text-align: center;
@@ -198,7 +205,8 @@ export default {
       phase: 1, // 0は始まる前、１はお題に答えている途中、2はリアクションタイム
       memberStatus: {}, //今のフェーズでボタンを誰が押したか
       username: "",
-      labelPosition: 'on-border'
+      timerSec: 30,
+      timerFlag: undefined,
     };
   },
 
@@ -211,10 +219,18 @@ export default {
   mounted() {
 
     this.username = this.$route.params.member
+
+    clearTimeout(this.wadaiFlag);
     this.wadaiFlag = setTimeout(
       function () {
         this.nextWadai();
-      }.bind(this), 3000);
+      }.bind(this), 30000);
+  
+    clearTimeout(this.timerFlag);
+    this.timerFlag = setInterval(
+      function() {
+        this.timerSec -= 1;
+      }.bind(this), 1000)
 
     // リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
     this.showUpvote = this.$route.query.showUpvote === "true";
@@ -236,7 +252,14 @@ export default {
         this.wadaiFlag = setTimeout(
           function () {
             this.nextWadai();
-          }.bind(this), 3000);
+          }.bind(this), 30000);
+        
+        clearTimeout(this.timerFlag);
+        this.timerSec = 30;
+        this.timerFlag = setInterval(
+          function() {
+            this.timerSec -= 1;
+          }.bind(this), 1000)
       });
     wadaiRef
       .doc("buttonStatus")
@@ -342,11 +365,12 @@ export default {
     },
 
     nextWadai(){
+          const db = firebase.firestore();
           //お題を１つ進める
           let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
           dbWadaiIndex.get().then((doc) => {
             dtools.log(doc.data().index)
-            if (doc.exists) {    
+            if (doc.exists || doc.data().index < wadais.length) {    
                 dbWadaiIndex.update({
                    index: doc.data().index + 1,
                 }).then(() => {
@@ -423,7 +447,10 @@ export default {
       dtools.log("words arranged!");
       dtools.log(arrangedWords);
       return arrangedWords;
-    }
+    },
+
+   
+
   }
 };
 </script>
