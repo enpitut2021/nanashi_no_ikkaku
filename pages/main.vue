@@ -226,11 +226,6 @@ export default {
         this.nextWadai();
       }.bind(this), 30000);
   
-    clearTimeout(this.timerFlag);
-    this.timerFlag = setInterval(
-      function() {
-        this.timerSec -= 1;
-      }.bind(this), 1000)
 
     // リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
     this.showUpvote = this.$route.query.showUpvote === "true";
@@ -254,12 +249,8 @@ export default {
             this.nextWadai();
           }.bind(this), 30000);
         
-        clearTimeout(this.timerFlag);
-        this.timerSec = 30;
-        this.timerFlag = setInterval(
-          function() {
-            this.timerSec -= 1;
-          }.bind(this), 1000)
+        this.timerSet();
+        
       });
     wadaiRef
       .doc("buttonStatus")
@@ -370,7 +361,7 @@ export default {
           let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
           dbWadaiIndex.get().then((doc) => {
             dtools.log(doc.data().index)
-            if (doc.exists || doc.data().index < wadais.length) {    
+            if (doc.exists && doc.data().index < this.wadais.length-1) {    
                 dbWadaiIndex.update({
                    index: doc.data().index + 1,
                 }).then(() => {
@@ -449,7 +440,19 @@ export default {
       return arrangedWords;
     },
 
-   
+    timerSet(){
+      clearTimeout(this.timerFlag)
+      console.log(this.wadaiIndex,this.wadais.length)
+      if(this.wadaiIndex < this.wadais.length-1){
+        this.timerSec = 30;
+        this.timerFlag = setInterval(
+          function() {
+            this.timerSec -= 1;
+          }.bind(this), 1000)
+      }else{
+        this.timerSec = "終了"
+      }
+    },
 
   }
 };
