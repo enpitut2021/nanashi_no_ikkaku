@@ -59,7 +59,7 @@
               <div class="card-image">
                 <figure class="image is-100x100">
                   <img
-                    src="~assets/images/ナナシロゴ_背景透過.png"
+                    src="~assets/images/ナナシcompleted.gif"
                     alt="Image"
                   />
                 </figure>
