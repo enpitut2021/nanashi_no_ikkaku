@@ -51,7 +51,8 @@
             おすすめのチーム名：
             {{ this.words.length != 0 ? this.words[0].word : "" }}
           </p>
-          <NextButton @click="buttonPush"/>
+          <NextButton @click="buttonPush" 
+          v-bind:message="buttonMessage" />
         </div>
           <b-modal v-model="isCardModalActive" :width="640" scroll="keep">
             <div class="card pb-6">
@@ -153,6 +154,12 @@ export default {
       memberStatus: {}, //今のフェーズでボタンを誰が押したか
       username: ""
     };
+  },
+
+  computed: {
+    buttonMessage() {
+      return (this.wadaiIndex + 1 == this.wadais.length) ? 'おすすめのチーム名を見る': '次のお題に進む';
+    }
   },
 
   mounted() {
