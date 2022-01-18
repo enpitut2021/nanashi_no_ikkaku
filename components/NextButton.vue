@@ -3,10 +3,13 @@
         <b-button size="is-large"
         @click="trigger"
         >
+        <div class="disp-flex">
+        <h1>{{ message }}</h1>
           <b-icon
                 icon="arrow-right-circle"
                 size="is-large">
             </b-icon>
+            </div>
         </b-button>
       </p>
 </template>
@@ -16,10 +19,15 @@
   float: left;
   padding-right: 10px;
 }
+.disp-flex {
+  display: flex;
+  flex-direction: row;
+}
 </style>
 
 <script>
 export default {
+  props: ['message'],
  methods: {
      trigger () {
          this.$emit('click');

@@ -45,15 +45,34 @@
               {{ item.word + (showUpvote ? "👍" : "") }}
             </b-button>
           </div>
+        </div> 
+        <div class="suggest-name">
+          <p v-show="showName" class="under-button-item">
+            おすすめのチーム名：
+            {{ this.words.length != 0 ? this.words[0].word : "" }}
+          </p>
+          <NextButton @click="buttonPush" 
+          v-bind:message="buttonMessage" />
         </div>
-
-<div class="suggest-name">
-      <p v-show="showName" class="under-button-item">
-        おすすめのチーム名：
-        {{ this.words.length != 0 ? this.words[0].word : "" }}
-      </p>
-      <NextButton @click="buttonPush"/>
-    </div>
+          <b-modal v-model="isCardModalActive" :width="640" scroll="keep">
+            <div class="card pb-6">
+              <div class="card-image">
+                <figure class="image is-100x100">
+                  <img
+                    src="~assets/images/ナナシロゴ_背景透過.png"
+                    alt="Image"
+                  />
+                </figure>
+              </div>
+              <div class="content">
+                <p class="title is-4 has-text-centered">
+                  おすすめのチーム名：
+                  {{ this.words.length != 0 ? this.words[0].word : "" }}
+                </p>
+              </div>
+            </div>
+          </b-modal>
+        </div>
       </div>
     </div>
   </div>
@@ -125,9 +144,9 @@ export default {
       timerId: undefined,
       field: "",
       showName: false,
-      showButton: true,
       shoukai: true,
       space: true,
+      isCardModalActive: false,
       wadaiIndex: 0,
       wadais: [],
       showUpvote: false,
@@ -135,6 +154,12 @@ export default {
       memberStatus: {}, //今のフェーズでボタンを誰が押したか
       username: ""
     };
+  },
+
+  computed: {
+    buttonMessage() {
+      return (this.wadaiIndex + 1 == this.wadais.length) ? 'おすすめのチーム名を見る': '次のお題に進む';
+    }
   },
 
   mounted() {
@@ -286,6 +311,10 @@ export default {
               });
             }
           });
+          //お題が全て終わったら名前を表示する
+          if (this.wadaiIndex + 1 == this.wadais.length) {
+            this.isCardModalActive = true
+          }
           //お題を１つ進める
           let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
           dbWadaiIndex.get().then((doc) => {
