@@ -141,6 +141,7 @@ export default {
       members: [],
       time: false,
       timerId: undefined,
+      wadaiFlag: undefined,
       field: "",
       showName: false,
       shoukai: true,
@@ -164,6 +165,10 @@ export default {
   mounted() {
 
     this.username = this.$route.params.member
+    this.wadaiFlag = setTimeout(
+      function () {
+        this.nextWadai();
+      }.bind(this), 3000);
 
     // リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
     this.showUpvote = this.$route.query.showUpvote === "true";
@@ -180,6 +185,12 @@ export default {
       .doc("wadaiIndex")
       .onSnapshot(snapshot => {
         this.wadaiIndex = snapshot.data()["index"];
+        this.resetMemberStatus();
+        clearTimeout(this.wadaiFlag);
+        this.wadaiFlag = setTimeout(
+          function () {
+            this.nextWadai();
+          }.bind(this), 3000);
       });
     wadaiRef
       .doc("buttonStatus")
@@ -266,6 +277,39 @@ export default {
       });
     },
 
+    resetMemberStatus(){
+      // 全員が押していたら次の処理に進む
+          this.phase = 0; 
+          //　ボタン押した人数をリセット
+          Object.keys(this.memberStatus).forEach(i => this.memberStatus[i] = false)
+          const db = firebase.firestore();
+          let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
+          dbButtonStatus.get().then((doc) => {
+            if (doc.exists) {
+              dbButtonStatus.update({
+                memberStatus: this.memberStatus
+              }).then(() => {
+                dtools.log("押した人リセット");
+              });
+            }
+          });
+    },
+
+    nextWadai(){
+          //お題を１つ進める
+          let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
+          dbWadaiIndex.get().then((doc) => {
+            dtools.log(doc.data().index)
+            if (doc.exists) {    
+                dbWadaiIndex.update({
+                   index: doc.data().index + 1,
+                }).then(() => {
+                   dtools.log("お題を進めた");
+                });      
+            }
+          });
+    },
+
     buttonPush() {
       if (this.wadaiIndex + 1>= this.wadais.length) {
         this.isCardModalActive = true;
@@ -299,32 +343,8 @@ export default {
           }
 
           // 全員が押していたら次の処理に進む
-          this.phase = 0; 
-          //　ボタン押した人数をリセット
-          Object.keys(this.memberStatus).forEach(i => this.memberStatus[i] = false)
-          const db = firebase.firestore();
-          let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
-          dbButtonStatus.get().then((doc) => {
-            if (doc.exists) {
-              dbButtonStatus.update({
-                memberStatus: this.memberStatus
-              }).then(() => {
-                dtools.log("押した人リセット");
-              });
-            }
-          });
-          //お題を１つ進める
-          let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
-          dbWadaiIndex.get().then((doc) => {
-            dtools.log(doc.data().index)
-            if (doc.exists) {
-              dbWadaiIndex.update({
-                index: doc.data().index + 1
-              }).then(() => {
-                dtools.log("お題を進めた");
-              });
-            }
-          });
+          this.resetMemberStatus()
+          this.nextWadai()
           dtools.log("みんなボタン押したよ")
         }
       });
