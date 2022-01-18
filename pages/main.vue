@@ -1,7 +1,7 @@
 <template>
   <div class="origin">
     <div class="columns is-fullheight">
-      <Sidebar :members="members" />
+      <Sidebar :members="members"/>
       <div class="container column is-10">
         <div
           v-for="row in arrangedWords"
@@ -77,6 +77,8 @@
 
 <style lang="scss" scoped>
 
+
+
 *{
 margin-top: 0;
 margin-bottom: 0;
@@ -85,8 +87,16 @@ margin-bottom: 0;
 h2 {
   margin: 0;
 }
+
 .origin {
   margin-bottom: 1rem;
+  width:100%!important;
+  height:100%!important;
+  position: fixed;
+}
+
+.is-fullheight{
+  height:100%!important;
 }
 
 .word-margin {
