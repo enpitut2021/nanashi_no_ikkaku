@@ -3,30 +3,6 @@
     <div class="columns is-fullheight">
       <Sidebar :members="members" />
       <div class="container column is-10">
-        <div class="columns is-centered">
-          <div class="column mt-5">
-            <h1 class="title is-1 has-text-centered">
-          {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
-            </h1>
-            <div class="columns is-centered">
-              <div class="column is-half card p-3">
-                <p>
-                  <b-field label="アンサー">
-                    <b-input v-model="field"></b-input>
-                  </b-field>
-                  <b-button
-                    @click="
-                      submit(field);
-                      field = '';
-                    "
-                  >
-                    追加
-                  </b-button>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
         <div
           v-for="row in arrangedWords"
           :key="row.id"
@@ -72,12 +48,40 @@
               </div>
             </div>
           </b-modal>
-        </div>
+          <div class="columns odai-input">
+            <div class="column is-4 card p-4">
+              <p class="has-text-centered">
+                <span class="is-size-4 has-text-weight-bold">
+                {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
+                </span>
+              </p>
+              <p>
+                <b-field>
+                  <b-input v-model="field" placeholder="答え"></b-input>
+                </b-field>
+                <b-button
+                    @click="
+                      submit(field);
+                      field = '';
+                    "
+                  >
+                    追加
+                </b-button>
+              </p>
+            </div>
+          </div>
       </div>
     </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
+
+*{
+margin-top: 0;
+margin-bottom: 0;
+}
+
 h2 {
   margin: 0;
 }
@@ -101,6 +105,13 @@ h2 {
   bottom: 20px;
   right: 20px;
 }
+
+.odai-input {
+  position: sticky;
+  bottom: 20px;
+  left: 20px;
+}
+
 
 .align-center {
   text-align: center;
