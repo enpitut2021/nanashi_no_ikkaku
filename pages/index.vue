@@ -3,19 +3,18 @@
     style="width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center"
   >
     <div
-      style="max-width: 50%; text-align: center; font-size: 30px; margin: 30px"
+      style="max-width: 50%; text-align: center; font-size: 30px; margin: 10px"
     >
-    <div> 
-      <label>最近のマイブームは</label>
-      <input
-        style="font-size: 30px"
-        type="text"
-        v-model="inputs[1]"
-        size="10"
-        placeholder="瞑想"
-      />
-      <label>です！</label>
+<section class="hero">
+  <div class="hero-body">
+    <div>
+      <img src="~assets/images/ナナシロゴ_背景透過.png" alt="">
     </div>
+    <p class="subtitle">
+      ナナシはオンラインで使う、初対面のチーム向けのアイスブレイクアプリです。<br>お題に答える、話し合う、ワードを押してリアクションをすることで仲良くなれるし、いつの間にかチーム名が決まっています!?
+    </p>
+  </div>
+</section>
       <div>
         <label>なまえは</label>
         <input
@@ -28,8 +27,8 @@
         <label>です！</label>
       </div>
     </div>
-    <nuxt-link to="/main">
-      <b-button @click="submit">こんにちは</b-button>
+    <nuxt-link :to="{name: 'main', params: { member: regist[1]}}">
+      <b-button @click="submit" class="mb-5">アイスブレイクを始める</b-button>
     </nuxt-link>
   </div>
 </template>
@@ -50,6 +49,7 @@ export default {
       const db = firebase.firestore();
       let dbWords = db.collection("test");
       let dbregist = db.collection("members");
+      let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
       this.inputs.forEach(word => {
         let inputWord = word;
         if (inputWord != "") {
@@ -72,6 +72,17 @@ export default {
           .then(ref =>{
             dtools.log("ADD MEMBER: ", ref.member)
           })
+          dbButtonStatus.get().then((doc) => {
+              dtools.log("新しくbuttonStatus")
+            if (doc.exists) {
+              let newMemberStatus = Object.assign(doc.data().memberStatus, {[inputmember]: false})
+              dtools.log("新しくbuttonStatus")
+              dtools.log(newMemberStatus)
+              dbButtonStatus.update({
+                memberStatus: newMemberStatus
+              });
+            }
+          });
         }
       })
     }
