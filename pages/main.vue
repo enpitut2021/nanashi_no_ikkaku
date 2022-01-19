@@ -2,7 +2,11 @@
   <div class="origin">
     <div class="columns is-fullheight">
       <Sidebar :members="members"/>
-      <div class="container column is-10">
+      <div v-show="before" class="startbutton has-text-centered is-centered">
+        <p class="title mb-2">みんなが揃ったらゲームを始めよう！</p>
+        <b-button size="is-medium" @click="startGame()">ゲームを始める</b-button>
+      </div>
+      <div v-show="game" class="container column is-10">
         <div
           v-for="row in arrangedWords"
           :key="row.id"
@@ -120,6 +124,10 @@ h2 {
   position: fixed;
 }
 
+.startbutton{
+  margin:auto;
+}
+
 .is-fullheight{
   height:100%!important;
 }
@@ -207,6 +215,8 @@ export default {
       username: "",
       timerSec: 30,
       timerFlag: undefined,
+      before: true,
+      game:false,
     };
   },
 
@@ -220,12 +230,13 @@ export default {
 
     this.username = this.$route.params.member
 
+    if (this.game){
     clearTimeout(this.wadaiFlag);
     this.wadaiFlag = setTimeout(
       function () {
         this.nextWadai();
       }.bind(this), 30000);
-  
+    }
 
     // リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
     this.showUpvote = this.$route.query.showUpvote === "true";
@@ -250,6 +261,14 @@ export default {
           }.bind(this), 30000);
         
         this.timerSet();
+
+        if (snapshot.data()["index"] >= 0){
+          this.before = false;
+          this.game = true;
+        }else {
+          this.before = true;
+          this.game = false;
+        }
         
       });
     wadaiRef
@@ -337,6 +356,13 @@ export default {
       });
     },
 
+    startGame(){
+      this.game = true
+      this.before = false
+      this.resetMemberStatus();
+      this.nextWadai();
+    },
+
     resetMemberStatus(){
       // 全員が押していたら次の処理に進む
           this.phase = 0; 
@@ -367,6 +393,14 @@ export default {
                 }).then(() => {
                    dtools.log("お題を進めた");
                 });      
+            }else if (doc.data().index < 0 || doc.data().index > this.wadais.length-1){
+                dbWadaiIndex.update({
+                   index: 0,
+                }).then(() => {
+                   dtools.log("お題を最初からにした");
+                }); 
+            }else if (doc.data().index == this.wadais.length-1){
+              return
             }
           });
     },
