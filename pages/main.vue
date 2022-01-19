@@ -1,36 +1,12 @@
 <template>
   <div class="origin">
     <div class="columns is-fullheight">
-      <Sidebar :members="members" />
+      <Sidebar :members="members"/>
       <div class="container column is-10">
-        <div class="columns is-centered">
-          <div class="column mt-5">
-            <h1 class="title is-1 has-text-centered">
-          {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
-            </h1>
-            <div class="columns is-centered">
-              <div class="column is-half card p-3">
-                <p>
-                  <b-field label="アンサー">
-                    <b-input v-model="field"></b-input>
-                  </b-field>
-                  <b-button
-                    @click="
-                      submit(field);
-                      field = '';
-                    "
-                  >
-                    追加
-                  </b-button>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
         <div
           v-for="row in arrangedWords"
           :key="row.id"
-          class="word-margin columns"
+          class="word-margin columns is-vcentered is-centered"
         >
           <div class="word-align column is-full">
             <b-button
@@ -40,20 +16,64 @@
               v-for="item in row"
               :key="item.id"
               class="moji"
-              v-bind:style="{ fontSize: 1 + Math.log(1 + item.good) + 'vh' }"
+              v-bind:style="{ fontSize: 2 + Math.log(1 + item.good) + 'vh' }"
             >
               {{ item.word + (showUpvote ? "👍" : "") }}
             </b-button>
           </div>
         </div> 
-        <div class="suggest-name">
-          <p v-show="showName" class="under-button-item">
-            おすすめのチーム名：
-            {{ this.words.length != 0 ? this.words[0].word : "" }}
-          </p>
-          <NextButton @click="buttonPush(); " 
-          v-bind:message="buttonMessage" />
+
+        <div v-show="slideCard" class="odai-input">
+          <b-button size="is-large" @click="showCard = true; slideCard = false;">
+            <!-- <b-icon pack="fa" icon="angle-left" size="is-large"/> //なんかアイコンにできなかった　--> 
+            ＜
+          </b-button>
         </div>
+        
+        <div v-show="showCard" class="odai-input">
+            <div class="card p-4">
+              <header class="card-content">
+                <p class="title has-text-centered">
+                 {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
+                </p>
+              </header>
+              
+              <p class="content columns is-vcentered is-centered">
+                <span class="column is-9">
+                 <b-field>
+                  <b-input size="is-medium" v-model="field" placeholder="答え" rounded></b-input>
+                 </b-field>
+                </span>
+                <span class="column is-2 pl-0 has-text-centered">
+                  <b-button
+                    @click="
+                      submit(field);
+                      field = '';
+                    "
+                  size="is-medium"
+                  rounded>
+                  ＞
+                  </b-button>
+                </span>
+              </p>
+              
+                
+              <footer class="card-footer">
+                <p class="under-button-item card-footer-item">
+                    <b-button size="is-large"
+                    @click="showCard = false; slideCard = true"
+                    style="border:none"
+                    >
+                      <div class="disp-flex">
+                        <h1>隠す</h1>   
+                      </div>
+                    </b-button>
+                </p>
+                <NextButton @click="buttonPush(); " 
+                  v-bind:message="buttonMessage" class="card-footer-item"/>
+                </footer>
+            </div>
+          </div>
           <b-modal v-model="isCardModalActive" :width="640" scroll="keep">
             <div class="card pb-6">
               <div class="card-image">
@@ -72,17 +92,36 @@
               </div>
             </div>
           </b-modal>
-        </div>
+          <div class="timer">
+            {{this.timerSec}}
+          </div>
       </div>
     </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
+
+
+
+*{
+margin-top: 0;
+margin-bottom: 0;
+}
+
 h2 {
   margin: 0;
 }
+
 .origin {
   margin-bottom: 1rem;
+  width:100%!important;
+  height:100%!important;
+  position: fixed;
+}
+
+.is-fullheight{
+  height:100%!important;
 }
 
 .word-margin {
@@ -100,6 +139,18 @@ h2 {
   position: fixed;
   bottom: 20px;
   right: 20px;
+}
+
+.odai-input {
+  position: fixed;
+  right:20px;
+  bottom: 20px;
+}
+
+.timer {
+  position: fixed;
+  right:20px;
+  top: 20px;
 }
 
 .align-center {
@@ -141,8 +192,10 @@ export default {
       members: [],
       time: false,
       timerId: undefined,
+      wadaiFlag: undefined,
       field: "",
-      showName: false,
+      showCard: true,
+      slideCard: false,
       shoukai: true,
       space: true,
       isCardModalActive: false,
@@ -151,7 +204,9 @@ export default {
       showUpvote: false,
       phase: 1, // 0は始まる前、１はお題に答えている途中、2はリアクションタイム
       memberStatus: {}, //今のフェーズでボタンを誰が押したか
-      username: ""
+      username: "",
+      timerSec: 30,
+      timerFlag: undefined,
     };
   },
 
@@ -164,6 +219,13 @@ export default {
   mounted() {
 
     this.username = this.$route.params.member
+
+    clearTimeout(this.wadaiFlag);
+    this.wadaiFlag = setTimeout(
+      function () {
+        this.nextWadai();
+      }.bind(this), 30000);
+  
 
     // リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
     this.showUpvote = this.$route.query.showUpvote === "true";
@@ -180,6 +242,15 @@ export default {
       .doc("wadaiIndex")
       .onSnapshot(snapshot => {
         this.wadaiIndex = snapshot.data()["index"];
+        this.resetMemberStatus();
+        clearTimeout(this.wadaiFlag);
+        this.wadaiFlag = setTimeout(
+          function () {
+            this.nextWadai();
+          }.bind(this), 30000);
+        
+        this.timerSet();
+        
       });
     wadaiRef
       .doc("buttonStatus")
@@ -266,6 +337,40 @@ export default {
       });
     },
 
+    resetMemberStatus(){
+      // 全員が押していたら次の処理に進む
+          this.phase = 0; 
+          //　ボタン押した人数をリセット
+          Object.keys(this.memberStatus).forEach(i => this.memberStatus[i] = false)
+          const db = firebase.firestore();
+          let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
+          dbButtonStatus.get().then((doc) => {
+            if (doc.exists) {
+              dbButtonStatus.update({
+                memberStatus: this.memberStatus
+              }).then(() => {
+                dtools.log("押した人リセット");
+              });
+            }
+          });
+    },
+
+    nextWadai(){
+          const db = firebase.firestore();
+          //お題を１つ進める
+          let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
+          dbWadaiIndex.get().then((doc) => {
+            dtools.log(doc.data().index)
+            if (doc.exists && doc.data().index < this.wadais.length-1) {    
+                dbWadaiIndex.update({
+                   index: doc.data().index + 1,
+                }).then(() => {
+                   dtools.log("お題を進めた");
+                });      
+            }
+          });
+    },
+
     buttonPush() {
       if (this.wadaiIndex + 1>= this.wadais.length) {
         this.isCardModalActive = true;
@@ -299,32 +404,8 @@ export default {
           }
 
           // 全員が押していたら次の処理に進む
-          this.phase = 0; 
-          //　ボタン押した人数をリセット
-          Object.keys(this.memberStatus).forEach(i => this.memberStatus[i] = false)
-          const db = firebase.firestore();
-          let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
-          dbButtonStatus.get().then((doc) => {
-            if (doc.exists) {
-              dbButtonStatus.update({
-                memberStatus: this.memberStatus
-              }).then(() => {
-                dtools.log("押した人リセット");
-              });
-            }
-          });
-          //お題を１つ進める
-          let dbWadaiIndex = db.collection("wadai").doc("wadaiIndex");
-          dbWadaiIndex.get().then((doc) => {
-            dtools.log(doc.data().index)
-            if (doc.exists) {
-              dbWadaiIndex.update({
-                index: doc.data().index + 1
-              }).then(() => {
-                dtools.log("お題を進めた");
-              });
-            }
-          });
+          this.resetMemberStatus()
+          this.nextWadai()
           dtools.log("みんなボタン押したよ")
         }
       });
@@ -357,7 +438,22 @@ export default {
       dtools.log("words arranged!");
       dtools.log(arrangedWords);
       return arrangedWords;
-    }
+    },
+
+    timerSet(){
+      clearTimeout(this.timerFlag)
+      console.log(this.wadaiIndex,this.wadais.length)
+      if(this.wadaiIndex < this.wadais.length-1){
+        this.timerSec = 30;
+        this.timerFlag = setInterval(
+          function() {
+            this.timerSec -= 1;
+          }.bind(this), 1000)
+      }else{
+        this.timerSec = "終了"
+      }
+    },
+
   }
 };
 </script>
