@@ -36,9 +36,12 @@
         
         <div v-show="showCard" class="odai-input">
             <div class="card p-4">
-              <header class="card-header column-6">
-                <p class="card-header-title has-text-centered ">
-                  {{ (this.finish) ? "お疲れ様でした" : "あと"+this.timerSec+"秒"  }}
+              <header class="card-header">
+                <p class="card-header-title">
+                  {{ (this.finish) ? "おすすめのチーム名をチェック！" : "あと"+this.timerSec+"秒"  }}
+                </p>
+                <p class="push-the-button">
+                     {{ (this.finish) ? "" : "終わったら右下を押そう!"}}
                 </p>
               </header>
               <div class="card-content">
@@ -128,6 +131,14 @@ h2 {
 
 .startbutton{
   margin:auto;
+}
+
+.push-the-button{
+  align-items: center;
+  color: #363636;
+  display: flex;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
 }
 
 .is-fullheight{
