@@ -30,17 +30,25 @@
         <div v-show="slideCard" class="odai-input">
           <b-button size="is-large" @click="showCard = true; slideCard = false;">
             <!-- <b-icon pack="fa" icon="angle-left" size="is-large"/> //なんかアイコンにできなかった　--> 
-            ＜
+           <p size="is-large"> {{ (this.finish) ? "出す" : "あと"+this.timerSec+"秒"  }} </p>
           </b-button>
         </div>
         
         <div v-show="showCard" class="odai-input">
             <div class="card p-4">
-              <header class="card-content">
+              <header class="card-header">
+                <p class="card-header-title">
+                  {{ (this.finish) ? "おすすめのチーム名をチェック！" : "あと"+this.timerSec+"秒"  }}
+                </p>
+                <p class="push-the-button">
+                     {{ (this.finish) ? "" : "終わったら右下を押そう!"}}
+                </p>
+              </header>
+              <div class="card-content">
                 <p class="title has-text-centered">
                  {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
                 </p>
-              </header>
+              </div>
               
               <p class="content columns is-vcentered is-centered">
                 <span class="column is-9">
@@ -96,9 +104,6 @@
               </div>
             </div>
           </b-modal>
-          <div class="timer">
-            {{this.timerSec}}
-          </div>
       </div>
     </div>
   </div>
@@ -128,6 +133,14 @@ h2 {
   margin:auto;
 }
 
+.push-the-button{
+  align-items: center;
+  color: #363636;
+  display: flex;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+}
+
 .is-fullheight{
   height:100%!important;
 }
@@ -153,12 +166,6 @@ h2 {
   position: fixed;
   right:20px;
   bottom: 20px;
-}
-
-.timer {
-  position: fixed;
-  right:20px;
-  top: 20px;
 }
 
 .align-center {
@@ -215,8 +222,10 @@ export default {
       username: "",
       timerSec: 30,
       timerFlag: undefined,
+      timerStop: undefined,
       before: true,
       game:false,
+      finish:false
     };
   },
 
@@ -275,6 +284,9 @@ export default {
       .doc("buttonStatus")
       .onSnapshot(snapshot => {
         this.memberStatus = snapshot.data()["memberStatus"]
+
+        // const newMembers = Object.assign(obj2, obj3);
+        // console.log(newMembers)
         // dtools.log("誰かががボタンを押した");
       });
     db.collection("members").onSnapshot(function(snapshot) {
@@ -312,6 +324,7 @@ export default {
     dtools.log(this.time);
     this.words = obj;
     this.members = obj2;
+    
   },
   components: {
     Sidebar
@@ -393,14 +406,12 @@ export default {
                 }).then(() => {
                    dtools.log("お題を進めた");
                 });      
-            }else if (doc.data().index < 0 || doc.data().index > this.wadais.length-1){
-                dbWadaiIndex.update({
-                   index: 0,
-                }).then(() => {
-                   dtools.log("お題を最初からにした");
-                }); 
-            }else if (doc.data().index == this.wadais.length-1){
-              return
+            // }else if (doc.data().index < 0 || doc.data().index > this.wadais.length-1){
+            //     dbWadaiIndex.update({
+            //        index: 0,
+            //     }).then(() => {
+            //        dtools.log("お題を最初からにした");
+            //     }); 
             }
           });
     },
@@ -476,6 +487,7 @@ export default {
 
     timerSet(){
       clearTimeout(this.timerFlag)
+      this.finish = false
       console.log(this.wadaiIndex,this.wadais.length)
       if(this.wadaiIndex < this.wadais.length-1){
         this.timerSec = 30;
@@ -483,8 +495,19 @@ export default {
           function() {
             this.timerSec -= 1;
           }.bind(this), 1000)
-      }else{
-        this.timerSec = "終了"
+      }else if (this.wadaiIndex == this.wadais.length-1){
+        this.timerSec = 30;
+        this.timerFlag = setInterval(
+          function() {
+            this.timerSec -= 1;
+            if (this.timerSec<=0){
+              clearTimeout(this.timerFlag)
+            }
+          }.bind(this), 1000)
+        this.timerStop = setTimeout(
+          function() {
+           this.finish = true
+          }.bind(this), 30000)
       }
     },
 
