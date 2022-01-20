@@ -395,12 +395,12 @@ export default {
                 }).then(() => {
                    dtools.log("お題を進めた");
                 });      
-            }else if (doc.data().index < 0 || doc.data().index >= this.wadais.length-1){
-                dbWadaiIndex.update({
-                   index: 0,
-                }).then(() => {
-                   dtools.log("お題を最初からにした");
-                }); 
+            // }else if (doc.data().index < 0 || doc.data().index > this.wadais.length-1){
+            //     dbWadaiIndex.update({
+            //        index: 0,
+            //     }).then(() => {
+            //        dtools.log("お題を最初からにした");
+            //     }); 
             }
           });
     },
@@ -476,6 +476,7 @@ export default {
 
     timerSet(){
       clearTimeout(this.timerFlag)
+      this.finish = false
       console.log(this.wadaiIndex,this.wadais.length)
       if(this.wadaiIndex < this.wadais.length-1){
         this.timerSec = 30;
@@ -488,6 +489,9 @@ export default {
         this.timerFlag = setInterval(
           function() {
             this.timerSec -= 1;
+            if (this.timerSec<=0){
+              clearTimeout(this.timerFlag)
+            }
           }.bind(this), 1000)
         this.timerStop = setTimeout(
           function() {
