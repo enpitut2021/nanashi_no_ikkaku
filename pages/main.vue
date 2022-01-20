@@ -38,7 +38,8 @@
             <div class="card p-4">
               <header class="card-header">
                 <p class="card-header-title">
-                  {{ (this.finish) ? "おすすめのチーム名をチェック！" : "あと"+this.timerSec+"秒"  }}
+                  {{ (this.finish) ? "おすすめのチーム名をチェック！" : 
+                     ((this.timerlessArray.includes(this.wadaiIndex)) ? "話し合おう": "あと"+this.timerSec+"秒")  }}
                 </p>
                 <p class="push-the-button">
                      {{ (this.finish) ? "" : "終わったら右下を押そう!"}}
@@ -225,7 +226,8 @@ export default {
       timerStop: undefined,
       before: true,
       game:false,
-      finish:false
+      finish:false,
+      timerlessArray:[1, 3, 6]
     };
   },
 
@@ -264,11 +266,13 @@ export default {
         this.wadaiIndex = snapshot.data()["index"];
         this.resetMemberStatus();
         clearTimeout(this.wadaiFlag);
+
+      if (!this.timerlessArray.includes(this.wadaiIndex)){
         this.wadaiFlag = setTimeout(
           function () {
             this.nextWadai();
           }.bind(this), 30000);
-        
+      }
         this.timerSet();
 
         if (snapshot.data()["index"] >= 0){
