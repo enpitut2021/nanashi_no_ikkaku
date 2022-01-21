@@ -96,7 +96,8 @@ export default {
         let inputmember = member;
         if(inputmember  !=  "" ){
           dbregist.add({
-            member: inputmember
+            member: inputmember,
+            buttonStatus: false
           })
           .then(ref =>{
             dtools.log("ADD MEMBER: ", ref.member)

@@ -20,7 +20,7 @@
               v-for="item in row"
               :key="item.id"
               class="moji"
-              v-bind:style="{ fontSize: 2 + Math.log(1 + item.good) + 'vh' }"
+              v-bind:style="{ fontSize: 1.5 + Math.log(1 + item.good) + 'vh' }"
             >
               {{ item.word + (showUpvote ? "👍" : "") }}
             </b-button>
@@ -30,7 +30,8 @@
         <div v-show="slideCard" class="odai-input">
           <b-button size="is-large" @click="showCard = true; slideCard = false;">
             <!-- <b-icon pack="fa" icon="angle-left" size="is-large"/> //なんかアイコンにできなかった　--> 
-           <p size="is-large"> {{ (this.finish) ? "出す" : "あと"+this.timerSec+"秒"  }} </p>
+           <p size="is-large"> {{ (this.finish) ? "出す" : 
+                                  ((this.timerlessArray.includes(this.wadaiIndex)) ? "話し合おう": "あと"+this.timerSec+"秒")  }} </p>
           </b-button>
         </div>
         
@@ -38,7 +39,8 @@
             <div class="card p-4">
               <header class="card-header">
                 <p class="card-header-title">
-                  {{ (this.finish) ? "おすすめのチーム名をチェック！" : "あと"+this.timerSec+"秒"  }}
+                  {{ (this.finish) ? "おすすめのチーム名をチェック！" : 
+                     ((this.timerlessArray.includes(this.wadaiIndex)) ? "話し合おう": "あと"+this.timerSec+"秒")  }}
                 </p>
                 <p class="push-the-button">
                      {{ (this.finish) ? "" : "終わったら右下を押そう!"}}
@@ -189,6 +191,7 @@ h2 {
 .moji:hover {
   position: relative;
   transform: translate3d(0, 5px, 0);
+  box-shadow:none !important;
 }
 
 .card {
@@ -225,7 +228,8 @@ export default {
       timerStop: undefined,
       before: true,
       game:false,
-      finish:false
+      finish:false,
+      timerlessArray:[1, 3, 6]
     };
   },
 
@@ -264,11 +268,13 @@ export default {
         this.wadaiIndex = snapshot.data()["index"];
         this.resetMemberStatus();
         clearTimeout(this.wadaiFlag);
+
+      if (!this.timerlessArray.includes(this.wadaiIndex)){
         this.wadaiFlag = setTimeout(
           function () {
             this.nextWadai();
           }.bind(this), 30000);
-        
+      }
         this.timerSet();
 
         if (snapshot.data()["index"] >= 0){
@@ -284,10 +290,16 @@ export default {
       .doc("buttonStatus")
       .onSnapshot(snapshot => {
         this.memberStatus = snapshot.data()["memberStatus"]
-
-        // const newMembers = Object.assign(obj2, obj3);
-        // console.log(newMembers)
-        // dtools.log("誰かががボタンを押した");
+        console.log("aaaaa")
+        console.log(this.members)
+        let members = this.members
+        for (const member of members) {    
+              let newstatus = this.memberStatus[member.member]
+              db.collection("members").doc(member.id).update({
+                  buttonStatus: newstatus
+              })
+        }
+        //dtools.log("誰かががボタンを押した");
       });
     db.collection("members").onSnapshot(function(snapshot) {
       obj2.splice(0);
@@ -421,7 +433,7 @@ export default {
         this.isCardModalActive = true;
       }
       //すでに今の話題に対して次にすすむボタンを押していたらreturn
-      if (this.memberStatus[this.username])
+      if (this.memberStatus[this.username] || this.username == undefined)
         return
       const db = firebase.firestore();
       let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
