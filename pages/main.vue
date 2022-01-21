@@ -20,7 +20,7 @@
               v-for="item in row"
               :key="item.id"
               class="moji"
-              v-bind:style="{ fontSize: 1.5 + Math.log(1 + item.good) + 'vh' }"
+              v-bind:style="{ fontSize: 1.75 + Math.log(1 + item.good) + 'vh' }"
             >
               {{ item.word + (showUpvote ? "👍" : "") }}
             </b-button>
@@ -43,7 +43,7 @@
                      ((this.timerlessArray.includes(this.wadaiIndex)) ? "話し合おう": "あと"+this.timerSec+"秒")  }}
                 </p>
                 <p class="push-the-button">
-                     {{ (this.finish) ? "" : "終わったら右下を押そう!"}}
+                     {{ (this.finish) ? "" : "終わったら次に進もう!"}}
                 </p>
               </header>
               <div class="card-content">
