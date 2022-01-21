@@ -5,7 +5,7 @@
         style="border:none"
         >
         <div class="disp-flex">
-        <h1>{{ message }}</h1>
+        <h1>{{ message + buttonProg}}</h1>
           <b-icon
                 icon="arrow-right-circle"
                 size="is-large">
@@ -28,8 +28,19 @@
 
 <script>
 export default {
-  props: ['message'],
- methods: {
+  props: ['message', 'memberStatus'],
+  computed: {
+    buttonProg() {
+      let trueCount = 0, allCount = 0;
+      Object.keys(this.memberStatus).forEach(i => {
+        allCount++;
+        if (this.memberStatus[i])
+          trueCount++;
+      });
+      return '(' + trueCount + '/' + allCount + ')';
+    }
+  },
+  methods: {
      trigger () {
          this.$emit('click');
      }

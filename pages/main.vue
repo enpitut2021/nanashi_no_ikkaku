@@ -83,8 +83,9 @@
                       </div>
                     </b-button>
                 </p>
-                <NextButton @click="buttonPush(); " 
-                  v-bind:message="buttonMessage" class="card-footer-item"/>
+                <NextButton @click="buttonPush();" 
+                  v-bind:message="buttonMessage" v-bind:memberStatus="memberStatus"
+                  class="card-footer-item"/>
                 </footer>
             </div>
           </div>
