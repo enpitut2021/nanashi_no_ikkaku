@@ -383,10 +383,12 @@ export default {
     },
 
     startGame(){
+      if (this.username != undefined){
       this.game = true
       this.before = false
       this.resetMemberStatus();
       this.nextWadai();
+      }
     },
 
     resetMemberStatus(){
