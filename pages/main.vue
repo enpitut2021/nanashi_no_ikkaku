@@ -2,7 +2,11 @@
   <div class="origin">
     <div class="columns is-fullheight">
       <Sidebar :members="members"/>
-      <div class="container column is-10">
+      <div v-show="before" class="startbutton has-text-centered is-centered">
+        <p class="title mb-2">みんなが揃ったらゲームを始めよう！</p>
+        <b-button size="is-medium" @click="startGame()">ゲームを始める</b-button>
+      </div>
+      <div v-show="game" class="container column is-10">
         <div
           v-for="row in arrangedWords"
           :key="row.id"
@@ -16,7 +20,7 @@
               v-for="item in row"
               :key="item.id"
               class="moji"
-              v-bind:style="{ fontSize: 2 + Math.log(1 + item.good) + 'vh' }"
+              v-bind:style="{ fontSize: 1.75 + Math.log(1 + item.good) + 'vh' }"
             >
               {{ item.word + (showUpvote ? "👍" : "") }}
             </b-button>
@@ -26,17 +30,27 @@
         <div v-show="slideCard" class="odai-input">
           <b-button size="is-large" @click="showCard = true; slideCard = false;">
             <!-- <b-icon pack="fa" icon="angle-left" size="is-large"/> //なんかアイコンにできなかった　--> 
-            ＜
+           <p size="is-large"> {{ (this.finish) ? "出す" : 
+                                  ((this.timerlessArray.includes(this.wadaiIndex)) ? "話し合おう": "あと"+this.timerSec+"秒")  }} </p>
           </b-button>
         </div>
         
         <div v-show="showCard" class="odai-input">
             <div class="card p-4">
-              <header class="card-content">
+              <header class="card-header">
+                <p class="card-header-title">
+                  {{ (this.finish) ? "おすすめのチーム名をチェック！" : 
+                     ((this.timerlessArray.includes(this.wadaiIndex)) ? "話し合おう": "あと"+this.timerSec+"秒")  }}
+                </p>
+                <p class="push-the-button">
+                     {{ (this.finish) ? "" : "終わったら次に進もう!"}}
+                </p>
+              </header>
+              <div class="card-content">
                 <p class="title has-text-centered">
                  {{ (this.wadais) ? this.wadais[this.wadaiIndex] : "" }}
                 </p>
-              </header>
+              </div>
               
               <p class="content columns is-vcentered is-centered">
                 <span class="column is-9">
@@ -52,7 +66,7 @@
                     "
                   size="is-medium"
                   rounded>
-                  ＞
+                  追加
                   </b-button>
                 </span>
               </p>
@@ -69,8 +83,9 @@
                       </div>
                     </b-button>
                 </p>
-                <NextButton @click="buttonPush(); " 
-                  v-bind:message="buttonMessage" class="card-footer-item"/>
+                <NextButton @click="buttonPush();" 
+                  v-bind:message="buttonMessage" v-bind:memberStatus="memberStatus" v-bind:showCount="showButtonCount"
+                  class="card-footer-item"/>
                 </footer>
             </div>
           </div>
@@ -92,9 +107,6 @@
               </div>
             </div>
           </b-modal>
-          <div class="timer">
-            {{this.timerSec}}
-          </div>
       </div>
     </div>
   </div>
@@ -118,6 +130,18 @@ h2 {
   width:100%!important;
   height:100%!important;
   position: fixed;
+}
+
+.startbutton{
+  margin:auto;
+}
+
+.push-the-button{
+  align-items: center;
+  color: #363636;
+  display: flex;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
 }
 
 .is-fullheight{
@@ -147,12 +171,6 @@ h2 {
   bottom: 20px;
 }
 
-.timer {
-  position: fixed;
-  right:20px;
-  top: 20px;
-}
-
 .align-center {
   text-align: center;
   padding-top: 20px;
@@ -166,14 +184,15 @@ h2 {
 .moji {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 30px;
-  border: 0;
-  box-shadow: 5px 5px 5px gray;
   transition: 0.3s;
+  border: 1px solid transparent;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
 }
 
 .moji:hover {
   position: relative;
   transform: translate3d(0, 5px, 0);
+  box-shadow:none !important;
 }
 
 .card {
@@ -207,6 +226,11 @@ export default {
       username: "",
       timerSec: 30,
       timerFlag: undefined,
+      timerStop: undefined,
+      before: true,
+      game:false,
+      finish:false,
+      timerlessArray:[1, 3, 6]
     };
   },
 
@@ -214,18 +238,22 @@ export default {
     buttonMessage() {
       return (this.wadaiIndex + 1 == this.wadais.length) ? 'おすすめのチーム名を見る': '次のお題に進む';
     },
+    showButtonCount() {
+      return (this.wadaiIndex + 1 != this.wadais.length)
+    }
   },
 
   mounted() {
 
     this.username = this.$route.params.member
 
+    if (this.game){
     clearTimeout(this.wadaiFlag);
     this.wadaiFlag = setTimeout(
       function () {
         this.nextWadai();
       }.bind(this), 30000);
-  
+    }
 
     // リンクで仕様指定（例：localhost:3000/main?showUpvote=true）
     this.showUpvote = this.$route.query.showUpvote === "true";
@@ -244,19 +272,38 @@ export default {
         this.wadaiIndex = snapshot.data()["index"];
         this.resetMemberStatus();
         clearTimeout(this.wadaiFlag);
+
+      if (!this.timerlessArray.includes(this.wadaiIndex)){
         this.wadaiFlag = setTimeout(
           function () {
             this.nextWadai();
           }.bind(this), 30000);
-        
+      }
         this.timerSet();
+
+        if (snapshot.data()["index"] >= 0){
+          this.before = false;
+          this.game = true;
+        }else {
+          this.before = true;
+          this.game = false;
+        }
         
       });
     wadaiRef
       .doc("buttonStatus")
       .onSnapshot(snapshot => {
         this.memberStatus = snapshot.data()["memberStatus"]
-        // dtools.log("誰かががボタンを押した");
+        console.log("aaaaa")
+        console.log(this.members)
+        let members = this.members
+        for (const member of members) {    
+              let newstatus = this.memberStatus[member.member]
+              db.collection("members").doc(member.id).update({
+                  buttonStatus: newstatus
+              })
+        }
+        //dtools.log("誰かががボタンを押した");
       });
     db.collection("members").onSnapshot(function(snapshot) {
       obj2.splice(0);
@@ -293,6 +340,7 @@ export default {
     dtools.log(this.time);
     this.words = obj;
     this.members = obj2;
+    
   },
   components: {
     Sidebar
@@ -337,6 +385,13 @@ export default {
       });
     },
 
+    startGame(){
+      this.game = true
+      this.before = false
+      this.resetMemberStatus();
+      this.nextWadai();
+    },
+
     resetMemberStatus(){
       // 全員が押していたら次の処理に進む
           this.phase = 0; 
@@ -367,6 +422,12 @@ export default {
                 }).then(() => {
                    dtools.log("お題を進めた");
                 });      
+            // }else if (doc.data().index < 0 || doc.data().index > this.wadais.length-1){
+            //     dbWadaiIndex.update({
+            //        index: 0,
+            //     }).then(() => {
+            //        dtools.log("お題を最初からにした");
+            //     }); 
             }
           });
     },
@@ -376,7 +437,7 @@ export default {
         this.isCardModalActive = true;
       }
       //すでに今の話題に対して次にすすむボタンを押していたらreturn
-      if (this.memberStatus[this.username])
+      if (this.memberStatus[this.username] || this.username == undefined)
         return
       const db = firebase.firestore();
       let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
@@ -442,6 +503,7 @@ export default {
 
     timerSet(){
       clearTimeout(this.timerFlag)
+      this.finish = false
       console.log(this.wadaiIndex,this.wadais.length)
       if(this.wadaiIndex < this.wadais.length-1){
         this.timerSec = 30;
@@ -449,8 +511,19 @@ export default {
           function() {
             this.timerSec -= 1;
           }.bind(this), 1000)
-      }else{
-        this.timerSec = "終了"
+      }else if (this.wadaiIndex == this.wadais.length-1){
+        this.timerSec = 30;
+        this.timerFlag = setInterval(
+          function() {
+            this.timerSec -= 1;
+            if (this.timerSec<=0){
+              clearTimeout(this.timerFlag)
+            }
+          }.bind(this), 1000)
+        this.timerStop = setTimeout(
+          function() {
+           this.finish = true
+          }.bind(this), 30000)
       }
     },
 

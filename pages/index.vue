@@ -28,7 +28,7 @@
       </div>
     </div>
     <nuxt-link :to="{name: 'main', params: { member: regist[1]}}">
-      <b-button @click="submit" class="mb-5">アイスブレイクを始める</b-button>
+      <b-button @click="submit(regist[1])" class="mb-5">アイスブレイクを始める</b-button>
     </nuxt-link>
   </div>
 </template>
@@ -41,11 +41,28 @@ export default {
   data() {
     return {
       inputs: [],
-      regist: []
+      regist: [],
+      members: []
     };
   },
+
+  mounted(){
+    const obj = [];
+    const db = firebase.firestore();
+    db.collection("members").onSnapshot(function(snapshot) {
+      obj.splice(0);
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        data.id = doc.id;
+        obj.push(data);
+      });
+      console.log(obj)
+    });
+    this.members = obj
+  },
+
   methods: {
-    submit() {
+    submit(field) {
       const db = firebase.firestore();
       let dbWords = db.collection("test");
       let dbregist = db.collection("members");
@@ -63,11 +80,24 @@ export default {
             });
         }
       });
+
+      
+      let kizon = false;
+      this.members.forEach(member => {
+        if (member.member == field) {
+          dtools.log("すでに入っている人だよ");
+          console.log("きぞん")
+          kizon = true;
+        }
+      });
+      if (kizon) return;
+
       this.regist.forEach(member=> {
         let inputmember = member;
-        if(inputmember  !=  ""){
+        if(inputmember  !=  "" ){
           dbregist.add({
-            member: inputmember
+            member: inputmember,
+            buttonStatus: false
           })
           .then(ref =>{
             dtools.log("ADD MEMBER: ", ref.member)
