@@ -20,7 +20,7 @@
               v-for="item in row"
               :key="item.id"
               class="moji"
-              v-bind:style="{ fontSize: 2 + Math.log(1 + item.good) + 'vh' }"
+              v-bind:style="{ fontSize: 1.5 + Math.log(1 + item.good) + 'vh' }"
             >
               {{ item.word + (showUpvote ? "👍" : "") }}
             </b-button>
