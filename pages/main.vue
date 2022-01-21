@@ -191,6 +191,7 @@ h2 {
 .moji:hover {
   position: relative;
   transform: translate3d(0, 5px, 0);
+  box-shadow:none !important;
 }
 
 .card {
