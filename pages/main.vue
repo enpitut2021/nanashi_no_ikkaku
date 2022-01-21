@@ -66,7 +66,7 @@
                     "
                   size="is-medium"
                   rounded>
-                  ＞
+                  追加
                   </b-button>
                 </span>
               </p>
