@@ -30,7 +30,8 @@
         <div v-show="slideCard" class="odai-input">
           <b-button size="is-large" @click="showCard = true; slideCard = false;">
             <!-- <b-icon pack="fa" icon="angle-left" size="is-large"/> //なんかアイコンにできなかった　--> 
-           <p size="is-large"> {{ (this.finish) ? "出す" : "あと"+this.timerSec+"秒"  }} </p>
+           <p size="is-large"> {{ (this.finish) ? "出す" : 
+                                  ((this.timerlessArray.includes(this.wadaiIndex)) ? "話し合おう": "あと"+this.timerSec+"秒")  }} </p>
           </b-button>
         </div>
         

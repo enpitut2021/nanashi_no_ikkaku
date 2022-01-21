@@ -8,7 +8,14 @@
     <p class="menu-label is-hidden-touch has-text-white is-size-6 has-text-weight-semibold">今話してる相手</p>
     <ul class="menu-list has-text-white">
       <li v-for="member in members" :key="member.id" class="mb-3">
-        <p>  {{member.member}} {{ (member.buttonStatus)? "Pressed" : ""}} </p>
+        <p>  {{member.member}}
+          <span v-if="member.buttonStatus">
+            <b-icon
+                icon="arrow-right-circle"
+                size="is-small">
+            </b-icon>
+          </span>  
+        </p>
       </li>
     </ul>
   </aside>
