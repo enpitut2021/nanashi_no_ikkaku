@@ -184,9 +184,9 @@ h2 {
 .moji {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 30px;
-  border: 0;
-  box-shadow: 5px 5px 5px gray;
   transition: 0.3s;
+  border: 1px solid transparent;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
 }
 
 .moji:hover {
