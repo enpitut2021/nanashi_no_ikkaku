@@ -288,10 +288,16 @@ export default {
       .doc("buttonStatus")
       .onSnapshot(snapshot => {
         this.memberStatus = snapshot.data()["memberStatus"]
-
-        // const newMembers = Object.assign(obj2, obj3);
-        // console.log(newMembers)
-        // dtools.log("誰かががボタンを押した");
+        console.log("aaaaa")
+        console.log(this.members)
+        let members = this.members
+        for (const member of members) {    
+              let newstatus = this.memberStatus[member.member]
+              db.collection("members").doc(member.id).update({
+                  buttonStatus: newstatus
+              })
+        }
+        //dtools.log("誰かががボタンを押した");
       });
     db.collection("members").onSnapshot(function(snapshot) {
       obj2.splice(0);
@@ -425,7 +431,7 @@ export default {
         this.isCardModalActive = true;
       }
       //すでに今の話題に対して次にすすむボタンを押していたらreturn
-      if (this.memberStatus[this.username])
+      if (this.memberStatus[this.username] || this.username == undefined)
         return
       const db = firebase.firestore();
       let dbButtonStatus = db.collection("wadai").doc("buttonStatus");
