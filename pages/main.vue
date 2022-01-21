@@ -84,7 +84,7 @@
                     </b-button>
                 </p>
                 <NextButton @click="buttonPush();" 
-                  v-bind:message="buttonMessage" v-bind:memberStatus="memberStatus"
+                  v-bind:message="buttonMessage" v-bind:memberStatus="memberStatus" v-bind:showCount="showButtonCount"
                   class="card-footer-item"/>
                 </footer>
             </div>
@@ -238,6 +238,9 @@ export default {
     buttonMessage() {
       return (this.wadaiIndex + 1 == this.wadais.length) ? 'おすすめのチーム名を見る': '次のお題に進む';
     },
+    showButtonCount() {
+      return (this.wadaiIndex + 1 != this.wadais.length)
+    }
   },
 
   mounted() {
