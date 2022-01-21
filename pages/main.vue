@@ -4,7 +4,7 @@
       <Sidebar :members="members"/>
       <div v-show="before" class="startbutton has-text-centered is-centered">
         <p class="title mb-2">みんなが揃ったらゲームを始めよう！</p>
-        <b-button size="is-medium" @click="startGame()">ゲームを始める</b-button>
+        <b-button size="is-medium" @click="startGame">ゲームを始める</b-button>
       </div>
       <div v-show="game" class="container column is-10">
         <div
